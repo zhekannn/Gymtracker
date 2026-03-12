@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import classes from './App.module.css'
-import Header from "../Header/Header"
+import Header from "../Header/Header.js"
 function App() {
   // const [data, setData] = useState('Загрузка...')
   // useEffect(()=>{
