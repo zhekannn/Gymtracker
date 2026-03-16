@@ -7,11 +7,11 @@ export const AppDataSource = new DataSource({
     host: "localhost",
     port: 5432,
     username: "postgres",
-    password: "123",
+    password: "1605Zhekan",
     database: "gymtracker",
     synchronize: true,
-    logging: true,
-    entities: [User], // Просто передаем класс!
+    logging: false,
+    entities: [User],
     subscribers: [],
     migrations: [],
 });

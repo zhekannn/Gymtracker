@@ -1,38 +1,51 @@
 import { useState, useEffect } from 'react'
 import classes from './App.module.css'
 import Header from "../Header/Header.js"
-function App() {
-  // const [data, setData] = useState('Загрузка...')
-  // useEffect(()=>{
-  //   fetch('/api/message').then(res=>res.json()).then(json=> setData(json.message)).catch(err => setData('Ошибка связи с сервером'))
-  // },[])
+export default function App() {
+  const [form, setForm]=useState({
+    username:'',
+    password:''
+  })
+    async function handleSubmit(e: React.FormEvent) {
+      e.preventDefault();
+      try{
+          const response=await fetch('/api/login', {
+            method:'POST',
+            headers:{
+              'Content-type':'application/json'
+            },
+            body:JSON.stringify(form),
+          });
+          const data=await response.json();
+          if(response.ok){
+            alert(`Welcome, ${data.username}!`);
+            localStorage.setItem('user', JSON.stringify(data));
+        } else {
+            alert(data.message || 'Authorization error');
+        }
+    }
+    catch (err) {
+        console.error("Network error:", err);
+        alert("Failed to connect to the server");
+    }
+  }
   return (
     <>
-      {/* <div style={{ textAlign: 'center', marginTop: '50px' }}>
-      <h1>Мой Fullstack Проект</h1>
-      <p>Ответ от сервера: <strong>{data}</strong></p>
-    </div> */}
     <Header></Header>
     <div className={`${classes.login}`}>
     <h3>Login</h3>
-        <form action="" className={`${classes.form}`}>
+        <form onSubmit={handleSubmit} className={`${classes.form}`}>
         
           <label htmlFor="username">👤Username
-          <input type="text" name='username' /></label>
-          {/* <label htmlFor="age">Age
-          <input type="text" name='age' /></label>
-          <label htmlFor="weight">Bodyweight
-          <input type="text" name="weight" /></label> */}
+          <input type="text" name='username' required value={form.username} onChange={(e)=>setForm({...form, username:e.target.value})}/></label>
           <label htmlFor="pass">🔒Password
-          <input type="password" name="pass" /></label>
+          <input type="password" name="pass" required value={form.password} onChange={(e)=>setForm({...form, password:e.target.value})}/></label>
           <p>Remember me<input type="radio" /></p>
           <button className={classes.loginbtn} type='submit'>Log in</button>
           <p><a href="#">Forgot password?</a></p>
-          <p>New here?<strong><a href="#">Sign up</a></strong></p>
+          <p>New here?<strong><a href="/sign">Sign up</a></strong></p>
         </form>
     </div>
     </>
   )
 }
-
-export default App

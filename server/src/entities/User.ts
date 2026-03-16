@@ -15,4 +15,6 @@ export class User implements IUser{
     weight?: number;
     @Column()
     height?: number;
+    @Column()
+    password: string;
 }
