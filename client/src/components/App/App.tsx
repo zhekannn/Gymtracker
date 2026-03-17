@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import classes from './App.module.css'
 import Header from "../Header/Header.js"
+import {IUser} from '../../../../shared/types'
 export default function App() {
   const [form, setForm]=useState({
     username:'',
@@ -18,7 +19,9 @@ export default function App() {
           });
           const data=await response.json();
           if(response.ok){
-            alert(`Welcome, ${data.username}!`);
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user as IUser));
+            alert(`Welcome, ${data.user.username}!`);
             localStorage.setItem('user', JSON.stringify(data));
         } else {
             alert(data.message || 'Authorization error');

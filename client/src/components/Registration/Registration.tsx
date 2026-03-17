@@ -23,8 +23,11 @@ export default function Registration(){
             }
             )
             if( response.ok){
-                const createdUser: IUser=await response.json();
-                setMessage(`Success! User ${createdUser.username} has been created with ID: ${createdUser.id}`)
+                const data=await response.json();
+                const user: IUser=data.user;
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(user as IUser));
+                setMessage(`Success! User ${user.username} has been created with ID: ${user.id}`)
             }
             else {
                 const errorData = await response.json();
