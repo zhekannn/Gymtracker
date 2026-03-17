@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react'
-import classes from './App.module.css'
+import classes from './Login.module.css'
 import Header from "../Header/Header.js"
 import {IUser} from '../../../../shared/types'
-export default function App() {
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+export default function Login() {
   const [form, setForm]=useState({
     username:'',
-    password:''
+    password:'',
+    remember:false
   })
+  const navigate = useNavigate();
     async function handleSubmit(e: React.FormEvent) {
       e.preventDefault();
       try{
@@ -21,8 +24,7 @@ export default function App() {
           if(response.ok){
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user as IUser));
-            alert(`Welcome, ${data.user.username}!`);
-            localStorage.setItem('user', JSON.stringify(data));
+            navigate('/profile')
         } else {
             alert(data.message || 'Authorization error');
         }
@@ -43,7 +45,7 @@ export default function App() {
           <input type="text" name='username' required value={form.username} onChange={(e)=>setForm({...form, username:e.target.value})}/></label>
           <label htmlFor="pass">🔒Password
           <input type="password" name="pass" required value={form.password} onChange={(e)=>setForm({...form, password:e.target.value})}/></label>
-          <p>Remember me<input type="radio" /></p>
+          <p>Remember me<input type="checkbox"  checked={form.remember} onChange={(e) => setForm({...form, remember:e.target.checked})}/></p>
           <button className={classes.loginbtn} type='submit'>Log in</button>
           <p><a href="#">Forgot password?</a></p>
           <p>New here?<strong><a href="/sign">Sign up</a></strong></p>

@@ -6,6 +6,6 @@ const router = Router();
 router.post('/login', login);
 router.post('/users', register);
 router.get('/me',authMiddleware, (req, res)=>{
-    res.json({message: "У вас есть доступ!", userData: (req as any).user })
+    res.json({message: "Access granted!", userData: (req as any).user })
 })
 export default router;

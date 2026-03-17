@@ -1,7 +1,8 @@
 import Header from "../Header/Header"
-import classes from "../App/App.module.css"
+import classes from "../Login/Login.module.css"
 import { useEffect,useState } from "react"
 import {IUser} from '../../../../shared/types'
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 export default function Registration(){
     const [message, setMessage]=useState('');
     const [formData,setFormData]=useState({
@@ -9,8 +10,10 @@ export default function Registration(){
         email:'',
         password:'',
         weight:0,
-        height:0
+        height:0,
+        rememberMe:false
     })
+    const navigate=useNavigate();
     async function handleSubmit(e: React.FormEvent){
         e.preventDefault(); 
         try{
@@ -27,7 +30,7 @@ export default function Registration(){
                 const user: IUser=data.user;
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(user as IUser));
-                setMessage(`Success! User ${user.username} has been created with ID: ${user.id}`)
+                navigate('/profile');
             }
             else {
                 const errorData = await response.json();
@@ -56,7 +59,7 @@ export default function Registration(){
           <input type="text" name="weight" required value={formData.weight} onChange={(e)=>setFormData({...formData, weight:Number(e.target.value)})}/></label>
           <label htmlFor="height">Height
           <input type="text" name="height" required value={formData.height} onChange={(e)=>setFormData({...formData, height:Number(e.target.value)})}/></label>
-          <p>Remember me<input type="radio" /></p>
+          <p>Remember me<input type="checkbox" checked={formData.rememberMe} onChange={(e)=> setFormData({...formData, rememberMe:e.target.checked})}/></p>
           <button className={classes.loginbtn} type='submit'>Sign in</button>
           <p>Already have an account?<strong><a href="/">Log in</a></strong></p>
         </form>
