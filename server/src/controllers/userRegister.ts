@@ -7,10 +7,12 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/jwt";
 export async function register(req:Request, res:Response) {
     try {
+        const userRepository = AppDataSource.getRepository(User);
         const { password: plainPassword, rememberMe, ...otherData } = req.body;
+        const findUser=await userRepository.findOneBy({username: req.body.username});
+        if(findUser) res.status(401).json({message: "User with such name already exists!"})
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(plainPassword, salt);
-        const userRepository = AppDataSource.getRepository(User);
         const newUser = userRepository.create({
             ...otherData,
             password: hashedPassword

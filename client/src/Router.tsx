@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, replace } from "react-router-dom";
 import Registration from "./components/Registration/Registration";
 import Login from "./components/Login/Login";
 import { useEffect } from "react";
@@ -10,10 +10,11 @@ export default function Router(){
     useEffect(() => {
         const verifyAuth = async () => {
           const token = localStorage.getItem('token');
-          if (!token) {
-            if (location.pathname !== '/login' && location.pathname!=='/sign') navigate('/login');
-            return;
-          }
+          const isAuthPage = location.pathname === '/login' || location.pathname === '/sign';
+      if (!token) {
+      if (!isAuthPage) navigate('/login', { replace: true });
+      return;
+    }
       
           try {
             const response = await fetch('/api/me', {
@@ -22,16 +23,20 @@ export default function Router(){
             if (!response.ok) {
               throw new Error('Token invalid');
             }
-            if(response.ok) navigate('/profile');
+            if(response.ok) {
+              if (isAuthPage) {
+                navigate('/profile', { replace: true });
+              }
+            }
           } catch (err) {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            navigate('/login');
+            navigate('/login', {replace:true});
           }
         };
       
         verifyAuth();
-      }, []);
+      }, [location.pathname]);
     return(
         <Routes>
             <Route path="/login" element={<Login/>} ></Route>

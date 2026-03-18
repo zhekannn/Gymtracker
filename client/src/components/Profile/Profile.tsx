@@ -7,13 +7,13 @@ export default function Profile(){
     const navigate=useNavigate();
     useEffect(()=>{
         const stored=localStorage.getItem('user');
-        if(!stored) navigate('/login')
+        if(!stored) navigate('/login', {replace:true})
         else setUser(JSON.parse(stored));
     },[navigate])
     function handleClick(){
         localStorage.removeItem('user');
         localStorage.removeItem('token');
-        navigate('/login');
+        navigate('/login', {replace:true});
     }
     if(!user) return null;
     return(

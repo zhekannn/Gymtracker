@@ -2,6 +2,8 @@ import Header from "../Header/Header"
 import { useState } from "react"
 import { IUser } from '../../../../shared/types'
 import { useNavigate } from 'react-router-dom';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircleIcon } from "lucide-react"
 export default function Registration() {
   const [message, setMessage] = useState('');
   const [formData, setFormData] = useState({
@@ -82,7 +84,12 @@ export default function Registration() {
             Already have an account? <a href="/" className="text-[#22C55E] font-bold hover:underline ml-1">Log in</a>
           </p>
         </form>
-        {message && <p className="mt-4 text-red-400 bg-red-400/10 py-2 px-4 rounded-lg">{message}</p>}
+        {message &&  <Alert variant= "destructive" className="max-w-md border-amber-200 bg-red-200 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-50">
+      <AlertCircleIcon />
+      <AlertTitle className="text-red-600">
+        {message}
+      </AlertTitle>
+    </Alert>}
       </div>
     </>
   )
