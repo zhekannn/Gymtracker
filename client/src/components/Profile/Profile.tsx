@@ -18,8 +18,9 @@ export default function Profile(){
     if(!user) return null;
     return(
         <>
+        <Header></Header>
         <div>
-            <h3>{user.username}</h3>
+            <h3>{"Hello, "+user.username}</h3>
             <p>{user.height}</p>
             <p>{user.weight}</p>
         </div>

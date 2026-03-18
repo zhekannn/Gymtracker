@@ -1,70 +1,89 @@
 import Header from "../Header/Header"
-import classes from "../Login/Login.module.css"
-import { useEffect,useState } from "react"
-import {IUser} from '../../../../shared/types'
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
-export default function Registration(){
-    const [message, setMessage]=useState('');
-    const [formData,setFormData]=useState({
-        username:'',
-        email:'',
-        password:'',
-        weight:0,
-        height:0,
-        rememberMe:false
-    })
-    const navigate=useNavigate();
-    async function handleSubmit(e: React.FormEvent){
-        e.preventDefault(); 
-        try{
-            const response=await fetch("/api/users",{
-                method:'POST',
-                headers:{
-                    'Content-type':'application/json',
-                },
-                body:JSON.stringify(formData),
-            }
-            )
-            if( response.ok){
-                const data=await response.json();
-                const user: IUser=data.user;
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(user as IUser));
-                navigate('/profile');
-            }
-            else {
-                const errorData = await response.json();
-                setMessage(errorData);
-        }
+import { useState } from "react"
+import { IUser } from '../../../../shared/types'
+import { useNavigate } from 'react-router-dom';
+export default function Registration() {
+  const [message, setMessage] = useState('');
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    weight: 0,
+    height: 0,
+    rememberMe: false
+  })
+  const navigate = useNavigate();
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      const response = await fetch("/api/users", {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user as IUser));
+        navigate('/profile');
+      } else {
+        const errorData = await response.json();
+        setMessage(errorData.message || "Registration error");
+      }
+    } catch (err) {
+      setMessage(`Request error: ${err}`);
     }
-        catch(err){
-            console.error('Request error:', err);
-            setMessage(`Request error:${err}`);
-        }
-    }
-    return(
-        <>
-         <Header></Header>
-    <div className={`${classes.login}`}>
-    <h3>Registration</h3>
-        <form onSubmit={handleSubmit} className={`${classes.form}`}>
-        
-          <label htmlFor="username">👤Username
-          <input type="text" name='username' required value={formData.username} onChange={(e)=>setFormData({...formData, username:e.target.value})}/></label>
-          <label htmlFor="email">Email
-          <input type="text" name='email' required value={formData.email} onChange={(e)=>setFormData({...formData, email:e.target.value})}/></label>
-          <label htmlFor="pass">🔒Password
-          <input type="password" name="pass" required value={formData.password} onChange={(e)=>setFormData({...formData, password:e.target.value})}/></label>
-          <label htmlFor="weight">Weight
-          <input type="text" name="weight" required value={formData.weight} onChange={(e)=>setFormData({...formData, weight:Number(e.target.value)})}/></label>
-          <label htmlFor="height">Height
-          <input type="text" name="height" required value={formData.height} onChange={(e)=>setFormData({...formData, height:Number(e.target.value)})}/></label>
-          <p>Remember me<input type="checkbox" checked={formData.rememberMe} onChange={(e)=> setFormData({...formData, rememberMe:e.target.checked})}/></p>
-          <button className={classes.loginbtn} type='submit'>Sign in</button>
-          <p>Already have an account?<strong><a href="/">Log in</a></strong></p>
+  }
+  return (
+    <>
+      <Header />
+      <div className="flex flex-col items-center justify-center min-h-[80vh] py-10 px-4">
+        <h3 className="text-3xl font-bold mb-8 text-white">Registration</h3>
+        <form 
+          onSubmit={handleSubmit} 
+          className="w-full max-w-md bg-[#1E293B] p-8 rounded-2xl shadow-2xl shadow-black/50 space-y-4"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label className="flex flex-col gap-1 text-xs font-semibold text-gray-400">
+              👤 Username
+              <input type="text" required className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" value={formData.username} onChange={(e) => setFormData({ ...formData, username: e.target.value })} />
+            </label>
+            <label className="flex flex-col gap-1 text-xs font-semibold text-gray-400">
+              📧 Email
+              <input type="email" required className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+            </label>
+          </div>
+          <label className="flex flex-col gap-1 text-xs font-semibold text-gray-400">
+            🔒 Password
+            <input type="password" required className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
+          </label>
+
+          <div className="grid grid-cols-2 gap-4">
+            <label className="flex flex-col gap-1 text-xs font-semibold text-gray-400">
+              ⚖️ Weight (kg)
+              <input type="number" required className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" value={formData.weight} onChange={(e) => setFormData({ ...formData, weight: Number(e.target.value) })} />
+            </label>
+            <label className="flex flex-col gap-1 text-xs font-semibold text-gray-400">
+              📏 Height (cm)
+              <input type="number" required className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" value={formData.height} onChange={(e) => setFormData({ ...formData, height: Number(e.target.value) })} />
+            </label>
+          </div>
+
+          <div className="flex items-center gap-2 text-sm pt-2">
+            <input type="checkbox" className="w-4 h-4 accent-[#22C55E]" checked={formData.rememberMe} onChange={(e) => setFormData({ ...formData, rememberMe: e.target.checked })} />
+            <span>Remember me</span>
+          </div>
+
+          <button type="submit" className="w-full bg-[#22C55E] hover:bg-[#4ADE80] text-[#020617] font-bold py-3 rounded-lg transition-all mt-4 cursor-pointer">
+            Sign up
+          </button>
+
+          <p className="text-center text-sm pt-2">
+            Already have an account? <a href="/" className="text-[#22C55E] font-bold hover:underline ml-1">Log in</a>
+          </p>
         </form>
-        <p>{message && message}</p>
-    </div>
-        </>
-    )
+        {message && <p className="mt-4 text-red-400 bg-red-400/10 py-2 px-4 rounded-lg">{message}</p>}
+      </div>
+    </>
+  )
 }

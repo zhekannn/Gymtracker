@@ -22,7 +22,7 @@ export default function Router(){
             if (!response.ok) {
               throw new Error('Token invalid');
             }
-            if (location.pathname === '/') navigate('/profile');
+            if(response.ok) navigate('/profile');
           } catch (err) {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
