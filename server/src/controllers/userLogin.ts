@@ -5,6 +5,7 @@ import { User } from "../entities/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/jwt";
+import { sendMail } from "./sendMail";
 export async function login(req:Request, res:Response){
     try{
         const { username, password, remember } = req.body;
@@ -16,6 +17,7 @@ export async function login(req:Request, res:Response){
         const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: remember ? '30d' : '24h' });
         const { password: _, ...userWithoutPassword } = user;
         const finalResponse: IUser = userWithoutPassword;
+        sendMail(user.email);   
         return res.status(200).json({user: finalResponse, token});
     }
     catch(err){

@@ -34,7 +34,6 @@ export default function Login() {
   }
   return (
     <>
-      <Header />
       <div className="flex flex-col items-center justify-center min-h-[70vh] px-4">
         <h3 className="text-3xl font-bold mb-8 text-white">Login</h3>
         <form 

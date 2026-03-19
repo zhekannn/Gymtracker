@@ -1,4 +1,3 @@
-import Header from "../Header/Header"
 import { toast } from "sonner"
 import { useNavigate,useLocation } from "react-router-dom";
 import { IUser } from "../../../../shared/types";
@@ -14,7 +13,7 @@ export default function Profile(){
         else setUser(JSON.parse(stored));
         if(location.state?.loginSuccess && !hasShown.current){
             toast.success('С возвращением!', {
-                description: `Рады тебя видеть, ${location.state.username || 'атлет'}!`,
+                description: `Рады тебя видеть, ${JSON.parse(stored!).username || "атлет"}!`,
                 duration: 2500,
               });
               hasShown.current=true;
@@ -30,7 +29,6 @@ export default function Profile(){
     if(!user) return null;
     return(
         <>
-        <Header></Header>
         <div>
             <h3>{"Hello, "+user.username}</h3>
             <p>{user.height}</p>
