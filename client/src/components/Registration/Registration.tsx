@@ -2,7 +2,7 @@ import Header from "../Header/Header"
 import { useState } from "react"
 import { IUser } from '../../../../shared/types'
 import { useNavigate } from 'react-router-dom';
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Alert, AlertTitle } from "@/components/ui/alert"
 import { AlertCircleIcon } from "lucide-react"
 export default function Registration() {
   const [message, setMessage] = useState('');
@@ -10,8 +10,8 @@ export default function Registration() {
     username: '',
     email: '',
     password: '',
-    weight: 0,
-    height: 0,
+    weight: '',
+    height: '',
     rememberMe: false
   })
   const navigate = useNavigate();
@@ -27,7 +27,9 @@ export default function Registration() {
         const data = await response.json();
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user as IUser));
-        navigate('/profile');
+        navigate('/profile', { replace:true,
+          state: { loginSuccess: true, username: data.user.username } 
+      });
       } else {
         const errorData = await response.json();
         setMessage(errorData.message || "Registration error");
@@ -63,11 +65,11 @@ export default function Registration() {
           <div className="grid grid-cols-2 gap-4">
             <label className="flex flex-col gap-1 text-xs font-semibold text-gray-400">
               ⚖️ Weight (kg)
-              <input type="number" required className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" value={formData.weight} onChange={(e) => setFormData({ ...formData, weight: Number(e.target.value) })} />
+              <input type="number" required className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" value={formData.weight} onChange={(e) => setFormData({ ...formData, weight: e.target.value })} />
             </label>
             <label className="flex flex-col gap-1 text-xs font-semibold text-gray-400">
               📏 Height (cm)
-              <input type="number" required className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" value={formData.height} onChange={(e) => setFormData({ ...formData, height: Number(e.target.value) })} />
+              <input type="number" required className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" value={formData.height} onChange={(e) => setFormData({ ...formData, height: e.target.value})} />
             </label>
           </div>
 

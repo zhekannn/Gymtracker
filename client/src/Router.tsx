@@ -1,10 +1,11 @@
 import { Routes, Route, replace } from "react-router-dom";
 import Registration from "./components/Registration/Registration";
 import Login from "./components/Login/Login";
-import { useEffect } from "react";
+import { useEffect,useState } from "react";
 import { useNavigate,useLocation } from "react-router-dom";
 import Profile from "./components/Profile/Profile";
 export default function Router(){
+  const [show, setShow]=useState(false);
     const navigate=useNavigate();
     const location=useLocation();
     useEffect(() => {
@@ -24,8 +25,12 @@ export default function Router(){
               throw new Error('Token invalid');
             }
             if(response.ok) {
+              setShow(true)
               if (isAuthPage) {
-                navigate('/profile', { replace: true });
+                navigate('/profile', { 
+                  replace: true, 
+                  state: { loginSuccess: true } 
+              });
               }
             }
           } catch (err) {
@@ -38,10 +43,13 @@ export default function Router(){
         verifyAuth();
       }, [location.pathname]);
     return(
+      <>
         <Routes>
+       
             <Route path="/login" element={<Login/>} ></Route>
             <Route path="/sign" element={<Registration/>} ></Route>
             <Route path="/profile" element={<Profile/>} ></Route>
         </Routes>
+        </>
     )
 }

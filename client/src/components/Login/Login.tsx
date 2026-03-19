@@ -21,7 +21,10 @@ export default function Login() {
       if (response.ok) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user as IUser));
-        navigate('/profile');
+        navigate('/profile', { 
+          replace: true, 
+          state: { loginSuccess: true, username: data.user.username } 
+      });
       } else {
         alert(data.message || 'Authorization error');
       }
