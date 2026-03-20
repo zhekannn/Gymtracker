@@ -1,9 +1,25 @@
 import logo from '../../assets/images/logo.jpg'
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect,useState } from 'react';
+import avatar from '../../assets/images/avatar.jpg'
+import { Avatar, AvatarFallback, AvatarImage,AvatarBadge } from "@/components/ui/avatar"
+import { Button } from '../ui/button';
+import { Menu } from "lucide-react"; // Иконка бургера
+import { 
+  Sheet, 
+  SheetContent, 
+  SheetTrigger,
+  SheetTitle 
+} from "@/components/ui/sheet";
+import { isatty } from 'tty';
 export default function Header() {
+  const navLinks = [
+    { name: "Profile", href: "/profile" },
+    { name: "Workouts", href: "/workouts" },
+  ];
     const [isAuth, setIsAuth] = useState(false);
-  const location = useLocation();
+    const location=useLocation();
+    const navigate=useNavigate();
   useEffect(() => {
     const verifyToken = async () => {
       const token = localStorage.getItem('token');
@@ -33,6 +49,11 @@ export default function Header() {
 
     verifyToken();
   }, [location]);
+  function handleClick(){
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    navigate('/login', {replace:true});
+}
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-[#020617]/80 backdrop-blur-md border-b border-[#334155] sticky top-0 z-50">
       <div className="flex items-center gap-4">
@@ -50,9 +71,38 @@ export default function Header() {
       </div>
       {isAuth &&
       <nav className="hidden md:flex items-center gap-6">
-        <a href="/profile" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Profile</a>
-        <a href="/workouts" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Workouts</a>
+        <Button className='hover:cursor-pointer hover:bg-[#4ADE80] bg-green-700' onClick={handleClick}>Log out</Button>
+        <Avatar className="w-[2.5em] h-[2.5em]">
+  <AvatarImage src={avatar} />
+  <AvatarFallback></AvatarFallback>
+  <AvatarBadge className="bg-green-600 dark:bg-green-800" />
+</Avatar>
+        <Link to="/profile" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Profile</Link>
+        <Link to="/workouts" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Workouts</Link>
       </nav>}
-    </header>
-  )
+      {isAuth &&
+    <div className="md:hidden">
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button variant="ghost" size="icon" className="text-white">
+            <Menu />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="right" className="bg-[#020617] border-slate-800 text-white">
+          <SheetTitle className="text-white">Меню</SheetTitle>
+          <nav className="flex flex-col gap-4 mt-8">
+            {navLinks.map((link) => (
+              <a key={link.name} href={link.href} className="text-xl font-semibold hover:text-[#22C55E]">
+                {link.name}
+              </a>
+            ))}
+            <hr className="border-slate-800" />
+            <Button onClick={handleClick} className="w-full bg-[#22C55E] text-black">Log out</Button>
+          </nav>
+        </SheetContent>
+      </Sheet>
+    </div>
+}
+  </header>
+)
 }

@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import Header from "../Header/Header.js"
 import { IUser } from '../../../../shared/types'
 import { useNavigate,Link } from 'react-router-dom';
 export default function Login() {

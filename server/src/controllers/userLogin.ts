@@ -5,7 +5,7 @@ import { User } from "../entities/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/jwt";
-import { sendMail } from "./sendMail";
+import { sendMail } from "../services/sendMail";
 export async function login(req:Request, res:Response){
     try{
         const { username, password, remember } = req.body;

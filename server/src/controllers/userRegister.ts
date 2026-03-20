@@ -5,8 +5,7 @@ import { IUser } from "../../../shared/types";
 import { User } from "../entities/User";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/jwt";
-import { sendMail } from "./sendMail";
-import { send } from "process";
+import { sendMail } from "../services/sendMail";
 export async function register(req:Request, res:Response) {
     try {
         const userRepository = AppDataSource.getRepository(User);
