@@ -11,7 +11,7 @@ export async function register(req:Request, res:Response) {
         const userRepository = AppDataSource.getRepository(User);
         const { password: plainPassword, rememberMe, ...otherData } = req.body;
         const findUser=await userRepository.findOneBy({username: req.body.username});
-        if(findUser)return  res.status(401).json({message: "User with such name already exists!"});
+        if(findUser) return  res.status(401).json({message: "User with such name already exists!"});
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(plainPassword, salt);
         const newUser = userRepository.create({

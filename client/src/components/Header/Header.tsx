@@ -4,19 +4,14 @@ import { useEffect,useState } from 'react';
 import avatar from '../../assets/images/avatar.jpg'
 import { Avatar, AvatarFallback, AvatarImage,AvatarBadge } from "@/components/ui/avatar"
 import { Button } from '../ui/button';
-import { Menu } from "lucide-react"; // Иконка бургера
+import { Menu } from "lucide-react"; 
 import { 
   Sheet, 
   SheetContent, 
   SheetTrigger,
   SheetTitle 
 } from "@/components/ui/sheet";
-import { isatty } from 'tty';
 export default function Header() {
-  const navLinks = [
-    { name: "Profile", href: "/profile" },
-    { name: "Workouts", href: "/workouts" },
-  ];
     const [isAuth, setIsAuth] = useState(false);
     const location=useLocation();
     const navigate=useNavigate();
@@ -89,13 +84,10 @@ export default function Header() {
           </Button>
         </SheetTrigger>
         <SheetContent side="right" className="bg-[#020617] border-slate-800 text-white">
-          <SheetTitle className="text-white">Меню</SheetTitle>
+          <SheetTitle className="text-white">Menu</SheetTitle>
           <nav className="flex flex-col gap-4 mt-8">
-            {navLinks.map((link) => (
-              <a key={link.name} href={link.href} className="text-xl font-semibold hover:text-[#22C55E]">
-                {link.name}
-              </a>
-            ))}
+          <Link to="/profile" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Profile</Link>
+          <Link to="/workouts" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Workouts</Link>
             <hr className="border-slate-800" />
             <Button onClick={handleClick} className="w-full bg-[#22C55E] text-black">Log out</Button>
           </nav>

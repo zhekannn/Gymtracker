@@ -1,4 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
+import { Spinner } from "@/components/ui/spinner"
 import { useEffect, useState } from "react";
 export const ProtectedRoute = () => {
   const [isVerifying, setIsVerifying] = useState(true);
@@ -26,7 +27,7 @@ export const ProtectedRoute = () => {
     verify();
   }, [token]);
 
-  if (isVerifying) return <div>Загрузка...</div>;
+  if (isVerifying) return <div className="flex items-center justify-center gap-6 h-[75vh]"><Spinner className="size-10"/></div>;
 
   return isValid ? <Outlet /> : <Navigate to="/login" replace />;
 };
