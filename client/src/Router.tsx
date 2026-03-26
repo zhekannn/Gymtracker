@@ -3,6 +3,8 @@ import Header from "./components/Header/Header";
 import Registration from "./components/Registration/Registration";
 import Login from "./components/Login/Login";
 import Profile from "./components/Profile/Profile";
+import Workouts from "./components/Workouts/Workouts";
+import Plans from "./components/Plans/Plans";
 import { ProtectedRoute, PublicRoute } from "./ProtectedRoute";
 export default function Router() {
   return (
@@ -16,6 +18,8 @@ export default function Router() {
       </Route>
       <Route element={<ProtectedRoute />}>
         <Route path="/profile" element={<Profile />} />
+        <Route path="/workouts" element={<Workouts/>}></Route>
+        <Route path="/plans" element={<Plans/>}></Route>
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>

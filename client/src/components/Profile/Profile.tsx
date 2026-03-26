@@ -65,7 +65,7 @@ export default function Profile(){
         {trainings === 0 && (
           <p className="text-sm text-slate-400 mb-6 leading-relaxed text-center">
             Dont have any trainings? Create a plan{" "}
-            <Link to="/workouts" className="text-primary font-medium underline decoration-primary/30 hover:decoration-primary transition-all">
+            <Link to="/plans" className="text-primary font-medium underline decoration-primary/30 hover:decoration-primary transition-all">
               here
             </Link>
             {" "}and start progressing!
@@ -100,7 +100,7 @@ export default function Profile(){
         </div>
           <div className="flex text-center mt-[2em]">
             {trainings==0 &&
-            <p>This list is empty. You dont have any trainings <Button className="w-[75%] bg-[#0F0011] text-secondary hover:cursor-pointer hover:bg-primary hover:text-black border border-primary h-[2.5em]">Create one</Button></p>
+            <p>This list is empty. You dont have any trainings <Button className="w-[75%] bg-[#0F0011] text-secondary hover:cursor-pointer hover:bg-primary hover:text-black border border-primary h-[2.5em]"><Link to='/workouts'>Create one</Link></Button></p>
             }
           </div>
       </div>

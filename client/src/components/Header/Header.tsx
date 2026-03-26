@@ -73,6 +73,7 @@ export default function Header() {
   <AvatarBadge className="bg-green-600 dark:bg-green-800" />
 </Avatar>
         <Link to="/profile" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Profile</Link>
+        <Link to="/plans" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Plans</Link>
         <Link to="/workouts" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Workouts</Link>
       </nav>}
       {isAuth &&
@@ -87,6 +88,7 @@ export default function Header() {
           <SheetTitle className="text-white">Menu</SheetTitle>
           <nav className="flex flex-col gap-4 mt-8">
           <Link to="/profile" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Profile</Link>
+          <Link to="/plans" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Plans</Link>
           <Link to="/workouts" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Workouts</Link>
             <hr className="border-slate-800" />
             <Button onClick={handleClick} className="w-full bg-[#22C55E] text-black">Log out</Button>
