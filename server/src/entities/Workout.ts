@@ -18,4 +18,6 @@ export class Workout implements IWorkout{
     user: User;
     @ManyToOne(() => TrainingPlans, { nullable: true, onDelete: 'SET NULL' })
     plan: TrainingPlans;
+    @Column({type: "decimal", precision: 5, scale: 2, nullable: true })
+    bodyWeight:number;
 }

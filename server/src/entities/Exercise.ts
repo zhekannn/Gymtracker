@@ -1,9 +1,9 @@
-import { Entity,PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity,PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 @Entity({name:"exercises"})
 export class Exercise{
     @PrimaryGeneratedColumn()
     id:number;
-    @Column({unique: true})
+    @Column({unique: true}) 
     name:string;
     @Column()
     muscleGroup:string;
