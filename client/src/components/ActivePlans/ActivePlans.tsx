@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 export default function ActivePlans(){
     const [message,setMessage]=useState(null);
     const [plans, setPlans]=useState<IPlan[] | null>(null)
-    const navigate=useNavigate();
+    // const navigate=useNavigate();
     useEffect(()=>{
               async function getPlans(){
               try{
@@ -47,7 +47,7 @@ export default function ActivePlans(){
     <div key={plan.id} className="w-full mb-6 p-4 bg-[#1E293B]/50 rounded-xl border border-primary/10">
       <h3 className="text-lg font-bold text-primary mb-3">{plan.name}</h3>
       <div className="space-y-2">
-        {plan.exercises.map((ex, index) => (
+        {plan.exercises.map((ex:IExercise, index) => (
           <div 
             key={index} 
             className="flex justify-between items-center text-sm bg-[#0F172A] p-2 rounded-md border border-slate-700"
@@ -63,10 +63,10 @@ export default function ActivePlans(){
     </div>
   ))
 }
- </div>
- {message && 
+{message && 
  <p>{message}</p>
  }
+ </div>
  </>
     )
 }

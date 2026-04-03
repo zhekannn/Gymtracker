@@ -6,16 +6,17 @@ export interface IUser {
     height?: number;
 }
 export interface IExercise {
+    exerciseId: number;
     name: string;
     sets: number;
     reps: number;
     weight: number;
   }
 export interface IPlan {
-    id:number;
+    id?:number;
     name:string;
     exercises:IExercise[];
-    userId?:number;
+    userId:number;
 }
 export interface IWorkout{
     id:number;
@@ -25,4 +26,10 @@ export interface IWorkout{
     exercisesSnapshot: IExercise[];
     completedAt: Date | string;
     planId?: number;
+}
+export interface IExercisesList{
+    id:number;
+    name:string;
+    muscleGroup:string;
+    description:string;
 }
