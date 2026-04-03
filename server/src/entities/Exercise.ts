@@ -1,6 +1,7 @@
 import { Entity,PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import { IExercisesList } from "../../../shared/types";
 @Entity({name:"exercises"})
-export class Exercise{
+export class Exercise implements IExercisesList{
     @PrimaryGeneratedColumn()
     id:number;
     @Column({unique: true}) 
