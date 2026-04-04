@@ -1,7 +1,8 @@
-import { FileText } from "lucide-react"
+import { FileText, Icon } from "lucide-react"
 import { IPlan,IExercise } from "../../../../shared/types"
 import { useState,useEffect } from "react"
-import { useNavigate } from "react-router-dom";
+import { Button } from "../ui/button";
+import { Trash2 } from 'lucide-react';
 export default function ActivePlans(){
     const [message,setMessage]=useState(null);
     const [plans, setPlans]=useState<IPlan[] | null>(null)
@@ -45,7 +46,10 @@ export default function ActivePlans(){
         {plans !== null && plans.length > 0 &&
   plans.map((plan) => (
     <div key={plan.id} className="w-full mb-6 p-4 bg-[#1E293B]/50 rounded-xl border border-primary/10">
-      <h3 className="text-lg font-bold text-primary mb-3">{plan.name}</h3>
+      <div className="flex">
+      <h3 className="text-lg font-bold text-primary mb-3 mr-2">{plan.name}</h3>
+      <Button variant="destructive" size='icon-sm' className="hover:bg-red-500 hover:text-black hover:cursor-pointer"><Trash2 /></Button>
+      </div>
       <div className="space-y-2">
         {plan.exercises.map((ex:IExercise, index) => (
           <div 

@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { IExercisesList,IExercise } from "../../../../shared/types"
 import { IPlan } from "../../../../shared/types"
+import { Trash2 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import {
   Command,
@@ -71,7 +72,8 @@ export default function CreatePlan(){
             navigate('/login');
             return;
           }
-          const id = JSON.parse(userId);
+          const userObj = JSON.parse(userId);
+          const id = userObj.id;
           const planData:IPlan = {
             name: name,
             exercises: exerciseList,
@@ -203,6 +205,7 @@ export default function CreatePlan(){
               <span className="text-primary font-bold">{ex.name}</span>
               <span>{ex.weight}kg</span>
               <span>{ex.sets}x{ex.reps}</span>
+              <Button onClick={()=>setExerciseList(exerciseList.filter((val, ind)=>ind!=index))} variant="destructive" size='xs' className="hover:bg-red-500 hover:text-black hover:cursor-pointer"><Trash2 /></Button>
            </div>
             ))}
             {(exerciseList && exerciseList.length>0) && <Button onClick={handleClick} className="hover:cursor-pointer hover:bg-[#4ADE80] ">Create the plan</Button>}
