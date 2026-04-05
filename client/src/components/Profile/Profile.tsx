@@ -100,7 +100,7 @@ export default function Profile(){
         </div>
           <div className="flex text-center mt-[2em]">
             {trainings==0 &&
-            <p>This list is empty. You dont have any trainings <Button className="w-[75%] bg-[#0F0011] text-secondary hover:cursor-pointer hover:bg-primary hover:text-black border border-primary h-[2.5em]"><Link to='/workouts'>Create one</Link></Button></p>
+            <p>This list is empty. You dont have any trainings <Link to='/workouts'><Button className="w-[75%] bg-[#0F0011] text-secondary hover:cursor-pointer hover:bg-primary hover:text-black border border-primary h-[2.5em]">Create one</Button></Link></p>
             }
           </div>
       </div>

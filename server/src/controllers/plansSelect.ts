@@ -14,7 +14,7 @@ export async function plansSelect(req:Request,res:Response) {
             const {user, ...otherData}=plan;
             return otherData as IPlan;
     })
-       return res.status(200).json(formattedPlans);
+       return res.status(200).json({plan:formattedPlans});
     }
     catch(err){
         console.log(err)

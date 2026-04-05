@@ -19,7 +19,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-export default function CreatePlan(){
+interface planProp{
+  onPlanChange: (message:string, plan?:IPlan)=>void;
+}
+export default function CreatePlan({onPlanChange}:planProp){
   const navigate=useNavigate();
   const [message, setMessage]=useState(null);
   const [name,setName]=useState('');
@@ -38,7 +41,6 @@ export default function CreatePlan(){
         try{
           const response=await fetch('/api/exercises',{
             method:'GET',
-            headers:{'Content-type': 'application/json'},
           });
           if(response.ok){
              const data:IExercisesList[]=await response.json();
@@ -86,17 +88,16 @@ export default function CreatePlan(){
           });
           if (response.ok) {
             const data = await response.json();
-            setMessage(data.message);
+            onPlanChange(data.message,data.plan)
             setExerciseList([]);
             setName('');
-            alert("Plan created successfully!");
           } else {
             const errorData = await response.json();
-            alert(errorData.message || "Error creating plan");
+            onPlanChange(errorData.message || "Server error occured");
           }
         } catch (err) {
           console.error("Connection error:", err);
-          alert("Server is unreachable");
+          onPlanChange( "Server error")
         }
     }
     return (

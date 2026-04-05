@@ -16,7 +16,7 @@ export async function createPlan(req:Request,res:Response) {
     if(!existPlan || (existPlan && existPlan.length>0)) return res.status(400).json({message:"You already have a plan with the same name"})
     const newPlan=planRepository.create({name:plan.name, exercises:plan.exercises, user:user});
     await planRepository.save(newPlan);
-    res.status(201).json({message: "Plan created successfully"})
+    res.status(201).json({message: "Plan was successfully created", plan: newPlan})
     }
     catch(err){
         console.error(err);
