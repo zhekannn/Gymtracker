@@ -52,11 +52,16 @@ export default function Plans(){
         setMessage(serverMessage);
         isShown.current=false
       };
+      function handleUpdate(id:number,updatedPlan:IPlan){
+        setPlans((prev) => 
+          prev.map((plan) => (plan.id === id ? updatedPlan : plan))
+      );
+      }
     return(
         <>
         <div className="md:flex md:grid-cols-3 w-[100%] content-center">
           <CreatePlan onPlanChange={addPlanToList}></CreatePlan>
-            <ActivePlans plans={plans} onDelete={deletePlan}/>
+            <ActivePlans plans={plans} onDelete={deletePlan} onUpdatePlan={handleUpdate}/>
         </div>
         </>
     )

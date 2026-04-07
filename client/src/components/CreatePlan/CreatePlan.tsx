@@ -24,10 +24,9 @@ interface planProp{
 }
 export default function CreatePlan({onPlanChange}:planProp){
   const navigate=useNavigate();
-  const [message, setMessage]=useState(null);
   const [name,setName]=useState('');
-    const [open, setOpen] = useState(false)
     const [value, setValue] = useState("")
+    const [open,setOpen]=useState(false);
     const [exercises, setExercises]=useState<IExercisesList[] | null>(null)
     const [exerciseList, setExerciseList]=useState<IExercise[] | null>([])
     const [currentEx, setCurrentEx] = useState<IExercise>({
@@ -39,9 +38,7 @@ export default function CreatePlan({onPlanChange}:planProp){
       });
     async function getExes() {
         try{
-          const response=await fetch('/api/exercises',{
-            method:'GET',
-          });
+          const response=await fetch('/api/exercises');
           if(response.ok){
              const data:IExercisesList[]=await response.json();
              setExercises(data);
@@ -55,7 +52,12 @@ export default function CreatePlan({onPlanChange}:planProp){
        getExes();
       },[])
       function handle(){
+        let incl:boolean=false;
         if (!value) return alert("Please select an exercise");
+        exerciseList?.forEach((val,index)=>{
+          if(val.name==value) incl=true;
+        })
+        if(incl) return alert("You already have this exercise in your list");
         const newExercise: IExercise = {...currentEx, name: value,};
         setExerciseList((prev) => (prev ? [...prev, newExercise] : [newExercise]));
         setValue("");
