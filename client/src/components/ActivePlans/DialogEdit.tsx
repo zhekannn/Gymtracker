@@ -37,6 +37,7 @@ interface planProps{
 import { useState,useEffect } from "react"
 export default function DialogEdit({ array, onUpdate }: planProps) {
     const [editName, setEditName] = useState(array.name);
+    const [openDialog, setOpenDialog]=useState(false);
     const [exercises, setExersises] = useState<IExercisesList[]>([]);
     const [editExercises, setEditExercises] = useState<IExercise[]>(array.exercises || []);
     const emptyEx: IExercise = { name: "", exerciseId: -1, sets: 0, reps: 0, weight: 0 };
@@ -64,7 +65,10 @@ export default function DialogEdit({ array, onUpdate }: planProps) {
             const response = await fetch(`/api/plans/${array.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedPlan)
+                body: JSON.stringify({
+                    name: editName,
+                    exercises: editExercises
+                })
             });
 
             if (response.ok) {
@@ -92,9 +96,9 @@ export default function DialogEdit({ array, onUpdate }: planProps) {
     };
 
     return (
-        <Dialog>
+        <Dialog open={openDialog}>
             <DialogTrigger asChild>
-                <Button variant="outline" size='icon-sm' className="hover:bg-primary hover:text-black hover:cursor-pointer"><Edit size={16}/></Button>
+                <Button onClick={()=>setOpenDialog(true)} variant="outline" size='icon-sm' className="hover:bg-primary hover:text-black hover:cursor-pointer"><Edit size={16}/></Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md dark">
                 <form onSubmit={handleSave}>
@@ -180,9 +184,9 @@ export default function DialogEdit({ array, onUpdate }: planProps) {
 
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button variant="outline" type="button">Cancel</Button>
+                            <Button variant="outline" type="button" onClick={()=>setOpenDialog(false)}>Cancel</Button>
                         </DialogClose>
-                        <Button type="submit">Save changes</Button>
+                        <Button type="submit" onClick={()=>setOpenDialog(false)}>Save changes</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

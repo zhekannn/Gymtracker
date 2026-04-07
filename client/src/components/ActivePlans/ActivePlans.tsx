@@ -1,8 +1,6 @@
 import { FileText } from "lucide-react"
 import { IPlan,IExercise } from "../../../../shared/types"
-import { Edit } from "lucide-react";
 import AlertDialogDelete from "./AlertDialogDelete";
-import { Button } from "../ui/button";
 import DialogEdit from "./DialogEdit";
 interface ActivePlansProps {
   plans: IPlan[];
@@ -10,8 +8,6 @@ interface ActivePlansProps {
   onUpdatePlan:(id:number, plan:IPlan)=>void;
 }
 export default function ActivePlans({plans, onDelete, onUpdatePlan}: ActivePlansProps){
-  function handleUpdate(plan:IPlan){
-  }
     return(
         <>
         <div className=" md:w-[50%] relative flex flex-col items-center bg-[#0F213B] mx-4 p-6 rounded-2xl border-2 border-primary/30 shadow-xl transition-all hover:border-primary/60">
