@@ -5,6 +5,17 @@ import avatar from '../../assets/images/avatar.jpg'
 import { Avatar, AvatarFallback, AvatarImage,AvatarBadge } from "@/components/ui/avatar"
 import { Button } from '../ui/button';
 import { Menu } from "lucide-react"; 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { 
   Sheet, 
   SheetContent, 
@@ -66,7 +77,23 @@ export default function Header() {
       </div>
       {isAuth &&
       <nav className="hidden md:flex items-center gap-6">
-        <Button className='hover:cursor-pointer hover:bg-[#4ADE80] bg-green-700' onClick={handleClick}>Log out</Button>
+        <AlertDialog>
+            <AlertDialogTrigger asChild>
+            <Button className='hover:cursor-pointer hover:bg-[#4ADE80] bg-green-700'>Log out</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className='dark'>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  You will log out from your account
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className='hover:cursor-pointer'>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleClick} variant="destructive" className='hover:cursor-pointer'>Continue</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+            </AlertDialog>
         <Avatar className="w-[2.5em] h-[2.5em]">
   <AvatarImage src={avatar} />
   <AvatarFallback></AvatarFallback>
@@ -91,7 +118,23 @@ export default function Header() {
           <Link to="/plans" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Plans</Link>
           <Link to="/workouts" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Workouts</Link>
             <hr className="border-slate-800" />
-            <Button onClick={handleClick} className="w-full bg-[#22C55E] text-black">Log out</Button>
+            <AlertDialog>
+            <AlertDialogTrigger asChild>
+            <Button className="w-full bg-[#22C55E] text-black">Log out</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  You will log out form your account
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleClick}>Continue</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+            </AlertDialog>
           </nav>
         </SheetContent>
       </Sheet>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { IUser } from '../../../../shared/types'
 import { useNavigate,Link } from 'react-router-dom';
+import { toast } from 'sonner';
 export default function Login() {
   const [form, setForm] = useState({
     username: '',
@@ -25,10 +26,20 @@ export default function Login() {
           state: { loginSuccess: true, username: data.user.username } 
       });
       } else {
-        alert(data.message || 'Authorization error');
+        toast.error(data.message || 'Authorization error')
+        setForm({
+          username: '',
+          password: '',
+          remember: false
+        })
       }
     } catch (err) {
-      console.error("Network error:", err);
+      toast.error('Network error')
+      setForm({
+        username: '',
+        password: '',
+        remember: false
+      })
     }
   }
   return (
