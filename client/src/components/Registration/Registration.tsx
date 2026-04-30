@@ -1,4 +1,3 @@
-import Header from "../Header/Header"
 import { useState } from "react"
 import { IUser } from '../../../../shared/types'
 import { useNavigate } from 'react-router-dom';

@@ -4,7 +4,7 @@ import AlertDialogDelete from "./AlertDialogDelete";
 import DialogEdit from "./DialogEdit";
 interface ActivePlansProps {
   plans: IPlan[];
-  onDelete: (id: number) => void;
+  onDelete(id: number): void;
   onUpdatePlan:(id:number, plan:IPlan)=>void;
 }
 export default function ActivePlans({plans, onDelete, onUpdatePlan}: ActivePlansProps){

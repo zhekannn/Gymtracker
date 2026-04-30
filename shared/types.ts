@@ -8,9 +8,9 @@ export interface IUser {
 export interface IExercise {
     exerciseId: number;
     name: string;
-    sets: number;
-    reps: number;
-    weight: number;
+    sets: string;
+    reps: string;
+    weight: string;
   }
 export interface IPlan {
     id?:number;

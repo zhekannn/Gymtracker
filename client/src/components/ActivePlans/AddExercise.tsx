@@ -48,6 +48,7 @@ export default function AddExercise({exercises,editExercises,setEdited,setShow}:
                                     <PopoverContent className="w-[280px] p-0 dark">
                                         <Command>
                                             <CommandInput placeholder="Search..." />
+                                            <CommandEmpty>No results</CommandEmpty>
                                             <CommandGroup className="max-h-[150px] overflow-y-auto">
                                                 {exercises.map((ex) => (
                                                     <CommandItem key={ex.id} onSelect={() => {

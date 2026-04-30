@@ -7,6 +7,7 @@ import { IExercisesList,IExercise } from "../../../../shared/types"
 import { IPlan } from "../../../../shared/types"
 import { Trash2 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { toast } from "sonner"
 import {
   Command,
   CommandEmpty,
@@ -27,14 +28,14 @@ export default function CreatePlan({onPlanChange}:planProp){
   const [name,setName]=useState('');
     const [value, setValue] = useState("")
     const [open,setOpen]=useState(false);
-    const [exercises, setExercises]=useState<IExercisesList[] | null>(null)
-    const [exerciseList, setExerciseList]=useState<IExercise[] | null>([])
+    const [exercises, setExercises]=useState<IExercisesList[]>([])
+    const [exerciseList, setExerciseList]=useState<IExercise[]>([])
     const [currentEx, setCurrentEx] = useState<IExercise>({
         exerciseId:0,
         name: '',
-        weight: 0, 
-        reps: 0,
-        sets: 0
+        weight: '' as any, 
+        reps: '' as any,
+        sets: '' as any
       });
     async function getExes() {
         try{
@@ -53,7 +54,7 @@ export default function CreatePlan({onPlanChange}:planProp){
       },[])
       function handle(){
         let incl:boolean=false;
-        if (!value) return alert("Please select an exercise");
+        if (!value) return toast.info("Please select an exercise");
         exerciseList?.forEach((val,index)=>{
           if(val.name==value) incl=true;
         })
@@ -61,7 +62,7 @@ export default function CreatePlan({onPlanChange}:planProp){
         const newExercise: IExercise = {...currentEx, name: value,};
         setExerciseList((prev) => (prev ? [...prev, newExercise] : [newExercise]));
         setValue("");
-        setCurrentEx({ exerciseId:0, name: '', weight: 0, reps: 0, sets: 0 });
+        setCurrentEx({ exerciseId:0, name: '', weight:'', reps: '', sets: '' });
       }
       async function handleClick(){
         if (!exerciseList || exerciseList.length === 0) {
@@ -85,7 +86,9 @@ export default function CreatePlan({onPlanChange}:planProp){
           };
           const response = await fetch('/api/addplan', {
             method: 'POST',
-            headers: { 'Content-type': 'application/json' },
+            headers: { 'Content-type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+             },
             body: JSON.stringify(planData)
           });
           if (response.ok) {
@@ -177,7 +180,7 @@ export default function CreatePlan({onPlanChange}:planProp){
               type="number" 
               id="name"
               value={currentEx.weight}
-              onChange={(e)=>setCurrentEx({...currentEx, weight:Number(e.target.value)})}
+              onChange={(e)=>setCurrentEx({...currentEx, weight:e.target.value})}
               required 
               className="bg-[#0F172A] border border-[#334155] text-[#F8FAFC] rounded-lg p-1 focus:outline-none focus:border-[#22C55E] focus:ring-2 focus:ring-[#22C55E]/20 transition-all"
             /></label>
@@ -186,7 +189,7 @@ export default function CreatePlan({onPlanChange}:planProp){
               type="number" 
               id="name"
               value={currentEx.reps}
-              onChange={(e)=>setCurrentEx({...currentEx, reps: Number(e.target.value)})}
+              onChange={(e)=>setCurrentEx({...currentEx, reps: e.target.value})}
               required 
               className="bg-[#0F172A] border border-[#334155] text-[#F8FAFC] rounded-lg p-1 focus:outline-none focus:border-[#22C55E] focus:ring-2 focus:ring-[#22C55E]/20 transition-all"
             /></label>
@@ -195,11 +198,12 @@ export default function CreatePlan({onPlanChange}:planProp){
               type="number" 
               id="name"
               value={currentEx.sets}
-              onChange={(e)=>setCurrentEx({...currentEx, sets: Number(e.target.value)})}
+              onChange={(e)=>setCurrentEx({...currentEx, sets: e.target.value})}
               required 
               className="bg-[#0F172A] border border-[#334155] text-[#F8FAFC] rounded-lg p-1 focus:outline-none focus:border-[#22C55E] focus:ring-2 focus:ring-[#22C55E]/20 transition-all"
             /></label>
             <Button onClick={handle} className="hover:cursor-pointer hover:bg-[#4ADE80] ">Add to the plan</Button>
+          
             </div>
             <div>
             {exerciseList && 

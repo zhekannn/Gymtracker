@@ -18,6 +18,7 @@ import { IPlan } from "../../../../shared/types"
 import { IExercise } from "../../../../shared/types"
 import { toast } from "sonner"
 import { IExercisesList } from "../../../../shared/types"
+import { useNavigate } from "react-router-dom"
 interface planProps{
     array:IPlan;
     onUpdate: (updatedPlan: IPlan) => void;
@@ -25,10 +26,21 @@ interface planProps{
 import { useState,useEffect } from "react"
 export default function DialogEdit({ array, onUpdate }: planProps) {
     const [editName, setEditName] = useState(array.name);
+    const navigate=useNavigate();
     const [openDialog, setOpenDialog]=useState(false);
     const [exercises, setExersises] = useState<IExercisesList[]>([]);
     const [editExercises, setEditExercises] = useState<IExercise[]>(array.exercises || []);
     const [showAddForm, setShowAddForm] = useState(false);
+    function isEqual(array1:IExercise[], array2:IExercise[]){
+        if(array1.length!=array2.length) return false;
+        for(let i=0;i<array1.length;i++){
+            if(array1[i].name!=array2[i].name) return false;
+            else if(array1[i].weight!=array2[i].weight) return false;
+            else if(array1[i].sets!=array2[i].sets) return false;
+            else if(array1[i].reps!=array2[i].reps) return false;
+        }
+        return true;
+    }
     useEffect(() => {
         async function getExes() {
             try {
@@ -45,21 +57,32 @@ export default function DialogEdit({ array, onUpdate }: planProps) {
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         const updatedPlan: IPlan = { ...array, name: editName, exercises: editExercises };
-
+        if(array.name==editName && isEqual(array.exercises,editExercises)) {
+            toast.info("Change atleast anything");
+            return;
+        }
         try {
+            const user=localStorage.getItem('user');
+            if(!user) navigate('/login'); 
+            const userId=JSON.parse(user!).id;
             const response = await fetch(`/api/plans/${array.id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                 },
+                
                 body: JSON.stringify({
                     name: editName,
-                    exercises: editExercises
+                    exercises: editExercises,
                 })
+                
             });
 
             if (response.ok) {
                 const data = await response.json();
                 onUpdate(data.plan || updatedPlan);
-                toast.success("Plan updated successfully");
+                toast.success(data.message);
+                setOpenDialog(false);
             }
         } catch (err) {
             toast.error("Failed to update plan");
@@ -71,7 +94,7 @@ export default function DialogEdit({ array, onUpdate }: planProps) {
     };
 
     return (
-        <Dialog open={openDialog}>
+        <Dialog open={openDialog} onOpenChange={setOpenDialog}>
             <DialogTrigger asChild>
                 <Button onClick={()=>setOpenDialog(true)} variant="outline" size='icon-sm' className="hover:bg-primary hover:text-black hover:cursor-pointer"><Edit size={16}/></Button>
             </DialogTrigger>
@@ -105,10 +128,11 @@ export default function DialogEdit({ array, onUpdate }: planProps) {
                     </div>
 
                     <DialogFooter>
-                        <DialogClose asChild>
-                            <Button variant="outline" type="button" onClick={()=>setOpenDialog(false)}>Cancel</Button>
+                        <DialogClose>
+                            <Button variant="outline" type="button" className="hover:cursor-pointer" onClick={()=> setOpenDialog(false)}>Cancel</Button>
+                            
                         </DialogClose>
-                        <Button type="submit" onClick={()=>setOpenDialog(false)}>Save changes</Button>
+                        <Button type="submit" className="hover:cursor-pointer bg-green-600 hover:bg-green-400">Save changes</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>
