@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany} from "typeorm";
 import {IUser} from "../../../shared/types"
 import { TrainingPlans } from "./TrainingPlans";
-
+import { Workout } from "./Workout";
 @Entity({ name: "users" })
 export class User implements IUser{
     @PrimaryGeneratedColumn()
@@ -18,4 +18,6 @@ export class User implements IUser{
     password: string;
     @OneToMany(()=>TrainingPlans, (training)=> training.user)
     plans:TrainingPlans[];
+    @OneToMany(()=>Workout, (workout)=> workout.user)
+    workouts:Workout[];
 }

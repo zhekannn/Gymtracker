@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, JoinColumn } from 'typeorm';
 import { User } from './User';
 import { TrainingPlans } from './TrainingPlans';
 import { IExercise, IWorkout } from '../../../shared/types'; 
@@ -14,7 +14,10 @@ export class Workout implements IWorkout{
     exercisesSnapshot: IExercise[];
     @Column({ nullable: true })
     note: string;
-    @ManyToOne(() => User, (user) => user.id)
+    @Column()
+    userId: number;
+    @ManyToOne(() => User, (user) => user.workouts)
+    @JoinColumn({name:"userId"})
     user: User;
     @ManyToOne(() => TrainingPlans, { nullable: true, onDelete: 'SET NULL' })
     plan: TrainingPlans;

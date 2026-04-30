@@ -13,9 +13,9 @@ router.post('/users', register);
 router.get('/me',authMiddleware, (req, res)=>{
     res.json({message: "Access granted!", userData: (req as any).user })
 })
-router.get('/exercises', exSelect);
-router.get('/plans', plansSelect);
-router.post('/addplan',createPlan);
-router.delete('/deleteplan/:id',deletePlan);
-router.put('/plans/:id',alterPlan);
+router.get('/exercises',exSelect);
+router.get('/plans',plansSelect);
+router.post('/addplan', authMiddleware, createPlan);
+router.delete('/deleteplan/:id',authMiddleware, deletePlan);
+router.put('/plans/:id',authMiddleware, alterPlan);
 export default router;
