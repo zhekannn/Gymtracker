@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, JoinColumn, AfterLoad } from 'typeorm';
 import { User } from './User';
 import { TrainingPlans } from './TrainingPlans';
 import { IExercise, IWorkout } from '../../../shared/types'; 
@@ -12,6 +12,16 @@ export class Workout implements IWorkout{
     planNameSnapshot: string;
     @Column({ type: "json" })
     exercisesSnapshot: IExercise[];
+    @AfterLoad()
+    parseJsonFields() {
+        if (typeof this.exercisesSnapshot === "string") {
+            try {
+                this.exercisesSnapshot = JSON.parse(this.exercisesSnapshot);
+            } catch (e) {
+                this.exercisesSnapshot = [];
+            }
+        }
+    }
     @Column({ nullable: true })
     note: string;
     @Column()

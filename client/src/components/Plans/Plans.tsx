@@ -3,31 +3,22 @@ import { toast } from "sonner";
 import { IPlan } from "../../../../shared/types";
 import ActivePlans from "../ActivePlans/ActivePlans";
 import CreatePlan from "../CreatePlan/CreatePlan";
+import { fetchUserPlans } from "../../getPlans";
 export default function Plans(){
     const [plans, setPlans]=useState<IPlan[]>([]);
     const isShown =useRef(false);
     const [message,setMessage]=useState("");
     useEffect(()=>{
-        async function getPlans(){
-        try{
-          const userId=localStorage.getItem('user');
-          const id=userId ? JSON.parse(userId) : null;
-          const response=await fetch(`/api/plans?userId=${id.id}`);
-          if(response.ok){
-            const data=await response.json();
-            setPlans(data.plan.reverse());
-          }
-          else{
-              const data=await response.json();
-              setMessage(data.message);
-          }
-        }
-        catch(err){
-            setMessage("Failed to connect to the server");
-          throw err;
-        }
-  }
-  getPlans();
+      async function fetchPlans() {
+        try {
+          const data = await fetchUserPlans();
+          setPlans(data);
+      } catch (err: any) {
+          setMessage(err.message);
+          toast.error(err.message);
+      }
+      }
+      fetchPlans();
   },[])
   async function deletePlan(id:number) {
     try{

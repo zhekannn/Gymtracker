@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/jwt";
 import { sendMail } from "../services/sendMail";
 import { UserService } from "../services/userService";
+import { IUser } from "../../../shared/types";
 const user=new UserService();
 export async function register(req:Request, res:Response) {
     try {
@@ -13,7 +14,7 @@ export async function register(req:Request, res:Response) {
         const savedUser=await user.create(otherData, hashedPassword);
         const token=jwt.sign({id:savedUser.id}, JWT_SECRET,{expiresIn: rememberMe ?'30d' : '24h'});
         const { password: _, ...userResponse } = savedUser;
-        const finalResponse=userResponse;
+        const finalResponse:IUser=userResponse;
         sendMail(req.body.email);
         return res.status(201).json({user:finalResponse, token});
     } catch (err) {

@@ -23,11 +23,10 @@ export class UserService{
         const newUser=this.userRepo.create({...user, password:hashedPassword});
         return await this.userRepo.save(newUser);
     }
-    public async login(username: string, password: string, remember: boolean): Promise<{token:string, user:{id:number, username:string, email:string}} | null> {
-        const user = await this.userRepo.findOneBy({ username });
+    public async login(username: string, password: string, remember: boolean): Promise<{token:string, user:IUser} | null> {
+        const user = await this.userRepo.findOne({where:{username}, relations:["workouts"]});
 
         if (!user) return null;
-
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
         if (!isPasswordCorrect) return null;
         const token = jwt.sign(
@@ -41,7 +40,10 @@ export class UserService{
             user: {
                 id: user.id,
                 username: user.username,
-                email: user.email
+                email: user.email,
+                height:user.height ?? 0,
+                weight:user.weight ?? 0,
+                trainingCount:user.workouts.length
             }
         };
     }

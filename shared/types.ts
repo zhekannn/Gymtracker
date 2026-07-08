@@ -4,6 +4,7 @@ export interface IUser {
     email: string;
     weight?: number;
     height?: number;
+    trainingCount?:number;
 }
 export interface IExercise {
     exerciseId: number;
@@ -21,7 +22,7 @@ export interface IPlan {
 export interface IWorkout{
     id:number;
     note?:string;
-    planName?:string;
+    planNameSnapshot?:string;
     userId?:number;
     exercisesSnapshot: IExercise[];
     completedAt: Date | string;
