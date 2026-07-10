@@ -27,7 +27,7 @@ export default function ExerciseRow({index,edited, setEdited,value,deleteRow}:ro
                                     <Input className="col-span-2 h-7 px-1 text-center text-xs text-primary" type="number" value={value.weight} onChange={(e) => {
                                         updateField('weight', Number(e.target.value))
                                     }} />
-                                    <Button type="button" variant="ghost" className="col-span-1 h-7 w-7 p-0 text-red-500" onClick={() => deleteRow(index)}>×</Button>
+                                    <Button type="button" variant="destructive" className="col-span-1 h-7 w-7 p-0 text-red-500 hover:cursor-pointer" onClick={() => deleteRow(index)}>×</Button>
                                 </div>
     )
 }
