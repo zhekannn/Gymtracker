@@ -20,12 +20,12 @@ export interface IPlan {
     userId:number;
 }
 export interface IWorkout{
-    id:number;
+    id?:number;
     note?:string;
     planNameSnapshot?:string;
     userId?:number;
     exercisesSnapshot: IExercise[];
-    completedAt: Date | string;
+    completedAt?: Date | string;
     planId?: number;
 }
 export interface IExercisesList{

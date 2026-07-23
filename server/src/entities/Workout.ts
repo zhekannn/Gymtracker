@@ -8,28 +8,21 @@ export class Workout implements IWorkout{
     id: number;
     @CreateDateColumn()
     completedAt: Date;
-    @Column()
-    planNameSnapshot: string;
+    @Column({ nullable: true })
+    planNameSnapshot?: string;
     @Column({ type: "json" })
     exercisesSnapshot: IExercise[];
-    @AfterLoad()
-    parseJsonFields() {
-        if (typeof this.exercisesSnapshot === "string") {
-            try {
-                this.exercisesSnapshot = JSON.parse(this.exercisesSnapshot);
-            } catch (e) {
-                this.exercisesSnapshot = [];
-            }
-        }
-    }
     @Column({ nullable: true })
-    note: string;
+    note?: string;
     @Column()
     userId: number;
     @ManyToOne(() => User, (user) => user.workouts)
     @JoinColumn({name:"userId"})
     user: User;
+    @Column({ nullable: true })
+    planId?: number;
     @ManyToOne(() => TrainingPlans, { nullable: true, onDelete: 'SET NULL' })
+    @JoinColumn({ name: "planId" })
     plan: TrainingPlans;
     @Column({type: "decimal", precision: 5, scale: 2, nullable: true })
     bodyWeight:number;
