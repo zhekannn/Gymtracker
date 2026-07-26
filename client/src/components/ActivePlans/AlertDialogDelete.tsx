@@ -13,8 +13,9 @@ import {
   import { Trash2 } from "lucide-react"
   interface prop{
     onChange:()=>void;
+    name:string;
   }
-export default function AlertDialogDelete({onChange}:prop){
+export default function AlertDialogDelete({onChange, name}:prop){
     return (
         <AlertDialog>
         <AlertDialogTrigger asChild>
@@ -25,7 +26,7 @@ export default function AlertDialogDelete({onChange}:prop){
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete this
-              plan from our servers.
+              {" "}{name} from our servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

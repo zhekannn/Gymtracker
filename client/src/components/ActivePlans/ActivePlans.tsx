@@ -23,7 +23,7 @@ export default function ActivePlans({plans, onDelete, onUpdatePlan}: ActivePlans
     <div key={plan.id} className="w-full mb-6 p-4 bg-[#1E293B]/50 rounded-xl border border-primary/10">
       <div className="flex items-center mb-3">
       <h3 className="text-lg font-bold text-primary mr-2">{plan.name}</h3>
-      <AlertDialogDelete onChange={()=>onDelete(plan.id!)}></AlertDialogDelete>
+      <AlertDialogDelete name="plan" onChange={()=>onDelete(plan.id!)}></AlertDialogDelete>
       <DialogEdit array={plan} onUpdate={(editPlan)=>onUpdatePlan(plan.id!,editPlan)}/>
       </div>
       <div className="space-y-2">

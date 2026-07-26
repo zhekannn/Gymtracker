@@ -9,6 +9,7 @@ import { deletePlan } from '../controllers/deletePlan';
 import { alterPlan } from '../controllers/alterPlan';
 import { getWorkouts } from '../controllers/getWorkouts';
 import { createWorkout } from '../controllers/createWorkout';
+import { deleteWorkout } from '../controllers/deleteWorkout';
 const router = Router();
 router.post('/login', login);
 router.post('/users', register);
@@ -22,4 +23,5 @@ router.delete('/deleteplan/:id',authMiddleware, deletePlan);
 router.put('/plans/:id',authMiddleware, alterPlan);
 router.get('/workouts', getWorkouts);
 router.post('/workout', authMiddleware,createWorkout);
+router.delete('/deleteWorkout/:id', authMiddleware, deleteWorkout)
 export default router;

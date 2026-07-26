@@ -11,4 +11,7 @@ export class WorkoutService{
         const newWorkout=this.workoutRepo.create({...workout, userId:userId});
         return await this.workoutRepo.save(newWorkout);
     }
+    public async delete(workoutId:number, userId:number){
+        return await this.workoutRepo.delete({userId:userId, id:workoutId});
+    }
 }

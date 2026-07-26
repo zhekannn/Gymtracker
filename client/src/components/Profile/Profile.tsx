@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 import { User, Ruler, Scale, Dumbbell, Edit2,ChartNoAxesColumnIncreasing,History} from "lucide-react";
 import { IWorkout } from "../../../../shared/types";
+import WorkoutSection from "../WorkoutSection/WorkoutSection";
 export default function Profile(){
     const [user,setUser]=useState<IUser | null>(null);
     const [trainings,setTrainings]=useState<IWorkout[] | null>(null);
@@ -116,7 +117,7 @@ export default function Profile(){
       </div>
 
       <div className=" md:w-[33.3%] relative flex flex-col items-center bg-[#0F213B] mx-4 p-6 rounded-2xl border-2 border-primary/30 shadow-xl transition-all hover:border-primary/60">
-        <div className="flex items-center gap-2 mb-6">
+        {/* <div className="flex items-center gap-2 mb-6">
           <History className="text-primary" size={20} />
           <h3 className="text-xl font-bold text-white">Training history</h3>
         </div>
@@ -143,7 +144,8 @@ export default function Profile(){
     ))}
   </div>
 )}
-          </div>
+          </div> */}
+        <WorkoutSection></WorkoutSection>
       </div>
       </div>
     );
