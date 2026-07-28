@@ -27,10 +27,29 @@ export interface IWorkout{
     exercisesSnapshot: IExercise[];
     completedAt?: Date | string;
     planId?: number;
+    bodyWeight?:number;
 }
 export interface IExercisesList{
     id:number;
     name:string;
     muscleGroup:string;
     description:string;
+}
+export interface IExerciseStats{
+    exercise:IExercisesList;
+    maxWeight:number;
+    currentWeight:number;
+    lastUse:Date | string;
+    progress:IStatPoint[];
+}
+export interface IUserStats{
+    weight:number;
+    workoutsInMonth:number;
+    totalWeightInMonth:number;
+    totalWeightPerWorkout:IStatPoint[];
+    progress:IStatPoint[];
+}
+export interface IStatPoint {
+  date: string;
+  value: number; 
 }

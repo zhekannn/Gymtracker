@@ -10,7 +10,7 @@ export class User implements IUser{
     username:string;
     @Column({ unique: true })
     email: string;
-    @Column()
+    @Column({type: "decimal", precision: 5, scale: 2, nullable: true })
     weight?: number;
     @Column()
     height?: number;
