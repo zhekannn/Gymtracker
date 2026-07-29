@@ -115,7 +115,9 @@ export default function WorkoutSection() {
                   {training.exercisesSnapshot.map((exercise: IExercise, index: number) => (
                     <div key={`${exercise.name}-${index}`} className="flex justify-between text-sm">
                       <span className="text-slate-300">{exercise.name}</span>
+                      <span className="text-slate-500 font-mono">{exercise.sets} sets</span>
                       <span className="text-slate-500 font-mono">{exercise.reps} reps</span>
+                      <span className="text-primary font-mono">{exercise.weight}</span>
                     </div>
                   ))}
                 </div>

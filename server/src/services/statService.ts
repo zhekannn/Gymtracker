@@ -1,11 +1,11 @@
 import { MoreThanOrEqual } from "typeorm";
-import { IUserStats, IExerciseStats, IStatPoint } from "../../../shared/types";
+import { IUserStats, IExerciseStats, IStatPoint, IExercisesList } from "../../../shared/types";
 import { AppDataSource } from "../data-source";
 import { Workout } from "../entities/Workout";
-
+import { Exercise } from "../entities/Exercise";
 export class StatService {
   private workoutRepo = AppDataSource.getRepository(Workout);
-
+  private exRepo=AppDataSource.getRepository(Exercise);
   public async getUserStats(userId: number): Promise<IUserStats> {
     // 1. Вычисляем дату "30 дней назад"
     const oneMonthAgo = new Date();
@@ -21,7 +21,6 @@ export class StatService {
         completedAt: "ASC", // Сортируем от старых к новым для правильного графика
       },
     });
-    if( !workouts || workouts.length==0) return {weight:0,workoutsInMonth:0,totalWeightInMonth:0,totalWeightPerWorkout:[],progress:[]};
     // 3. Считаем общий тоннаж за месяц и формируем точки для графиков
     let totalWeightInMonth = 0;
 
@@ -66,12 +65,14 @@ export class StatService {
     // Берем самый последний известный вес тела или 0
     const latestBodyWeight = workouts.length > 0 ? workouts[workouts.length - 1]!.bodyWeight || 0 : 0;
     const workoutsInMonth=workouts.length;
+    const totalWorkouts=await this.workoutRepo.count({where:{userId:userId}});
     return {
       weight: latestBodyWeight,
       workoutsInMonth,
       totalWeightInMonth,
       totalWeightPerWorkout,
       progress,
+      totalWorkouts
     };
   }
 
@@ -86,7 +87,7 @@ export class StatService {
     const statsMap = new Map<number, IExerciseStats>();
 
     for (const workout of workouts) {
-      const dateStr = new Date(workout.completedAt).toISOString().split("T")[0];
+      const dateStr = new Date(workout.completedAt).toISOString();
     if(!dateStr) continue;
       for (const ex of workout.exercisesSnapshot) {
         if (!ex.exerciseId) continue;
@@ -94,12 +95,15 @@ export class StatService {
         const exWeight = Number(ex.weight) || 0;
 
         if (!statsMap.has(ex.exerciseId)) {
+          const exercise=await this.exRepo.findOneBy({id:ex.exerciseId});
           statsMap.set(ex.exerciseId, {
             exercise: {
               id: ex.exerciseId,
               name: ex.name,
+              muscleGroup:exercise?.muscleGroup,
+              description:exercise?.description
               // По необходимости добавьте остальные поля IExercisesList
-            } as any,
+            } as IExercisesList,
             maxWeight: exWeight,
             currentWeight: exWeight,
             lastUse: dateStr,
