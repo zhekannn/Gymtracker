@@ -212,7 +212,7 @@ export default function Workouts() {
                     variant="outline"
                     role="combobox"
                     aria-expanded={openIndex === ind}
-                    className="w-full justify-between bg-[#0F172A] text-white border-border hover:bg-[#1E293B]"
+                    className="w-full dark justify-between bg-[#0F172A] text-white border-border hover:bg-[#1E293B]"
                   >
                     {exercise.name !== "Choose an exercise"
                       ? exercise.name
@@ -222,7 +222,7 @@ export default function Workouts() {
                 </PopoverTrigger>
 
                 <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-[#0F172A] border-border text-white">
-                  <Command className="bg-[#0F172A] text-white">
+                  <Command className="bg-[#0F172A] text-white dark">
                     <CommandInput placeholder="Search exercise..." className="text-white" />
                     <CommandEmpty>Not found.</CommandEmpty>
                     <CommandGroup>

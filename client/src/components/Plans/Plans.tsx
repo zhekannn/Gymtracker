@@ -4,6 +4,8 @@ import { IPlan } from "../../../../shared/types";
 import ActivePlans from "../ActivePlans/ActivePlans";
 import CreatePlan from "../CreatePlan/CreatePlan";
 import { fetchUserPlans } from "../../getPlans";
+import { Button } from "../ui/button";
+import GenerateAiPlanDialog from "../GeneratePlanDialog/GeneratePlanDialog";
 export default function Plans(){
     const [plans, setPlans]=useState<IPlan[]>([]);
     const isShown =useRef(false);
@@ -50,11 +52,27 @@ export default function Plans(){
       );
       }
     return(
-        <>
-        <div className="md:flex md:grid-cols-3 w-[100%] content-center">
-          <CreatePlan onPlanChange={addPlanToList}></CreatePlan>
-            <ActivePlans plans={plans} onDelete={deletePlan} onUpdatePlan={handleUpdate}/>
+      <div className="w-full  mx-auto space-y-6 p-4 md:p-6">
+      {/* Баннер с AI кнопкой */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 bg-[#0F172A]/60 border border-border/50 rounded-2xl gap-4 shadow-xl">
+        <div>
+          <h2 className="text-xl font-bold text-white">Workout Plans</h2>
+          <p className="text-xs text-slate-400 mt-1">
+            Create plans manually or generate a smart plan tailored for you using AI.
+          </p>
         </div>
-        </>
+        <GenerateAiPlanDialog onPlanGenerated={addPlanToList} />
+      </div>
+
+      {/* Пропорция 1:2 — слева создание, справа активные планы */}
+      <div className="md:grid grid-cols-2 w-full md:grid-cols-12 gap-6 items-start ">
+        <div className="md:col-span-4">
+          <CreatePlan onPlanChange={addPlanToList} />
+        </div>
+        <div className="md:col-span-8">
+          <ActivePlans plans={plans} onDelete={deletePlan} onUpdatePlan={handleUpdate} />
+        </div>
+      </div>
+    </div>
     )
 }
