@@ -1,12 +1,12 @@
 import { toast } from "sonner"
-import { useNavigate,useLocation, data } from "react-router-dom";
-import { IExercise, IUser } from "../../../../shared/types";
+import { useNavigate,useLocation } from "react-router-dom";
+import { IUser } from "../../../../shared/types";
 import StatisticSection from "../StatisticSection/StatisticSection";
 import { useEffect,useState,useRef } from "react";
 import avatar from '../../assets/images/avatar.jpg';
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
-import { User, Ruler, Scale, Dumbbell, Edit2,ChartNoAxesColumnIncreasing,History} from "lucide-react";
+import { User, Ruler, Scale, Edit2} from "lucide-react";
 import { IWorkout } from "../../../../shared/types";
 import WorkoutSection from "../WorkoutSection/WorkoutSection";
 export default function Profile(){

@@ -2,7 +2,7 @@ import { ChartNoAxesColumnIncreasing, Loader2, Dumbbell, User } from "lucide-rea
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { IExercisesList, IExerciseStats, IUserStats } from "../../../../shared/types";
+import { IExerciseStats, IUserStats } from "../../../../shared/types";
 import { Button } from "../ui/button";
 import { 
   ResponsiveContainer, 
@@ -126,7 +126,7 @@ export default function StatisticSection() {
                     </p>
                   </div>
                 </div>
-                <Button className="hover:cursor-pointer items-center justify-center" onClick={()=>setShowGraph((prev)=>!prev)}>{showGraph ? "Hide graphics" : "Show graphics"}</Button>
+                <Button className="hover:cursor-pointer items-center justify-center hover:bg-primary-hover" onClick={()=>setShowGraph((prev)=>!prev)}>{showGraph ? "Hide graphics" : "Show graphics"}</Button>
                 {showGraph && <>
                 {/* График 1: Объем за тренировки (Volume Per Workout) */}
                 <div className="bg-slate-900/50 p-5 rounded-xl border border-border/40">
@@ -135,19 +135,29 @@ export default function StatisticSection() {
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={userStats.totalWeightPerWorkout}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
-                        <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} />
+                        <XAxis dataKey="date" stroke="#94a3b8" fontSize={12}
+                          tickFormatter={(val: any) => {
+                            if (!val) return "";
+                            const d = new Date(val);
+                            return isNaN(d.getTime()) ? String(val) : d.toLocaleDateString([], { day: '2-digit', month: '2-digit' });
+                          }} />
                         <YAxis stroke="#94a3b8" fontSize={12} />
                         <Tooltip 
                           contentStyle={{ backgroundColor: "#0F172A", borderColor: "#334155", borderRadius: "8px" }}
-                          itemStyle={{ color: "#22C55E" }}
+                          itemStyle={{ color: "#22C55E" }}  
+                          labelFormatter={(label: any) => {
+                            if (!label) return "";
+                            const d = new Date(label);
+                            return isNaN(d.getTime()) ? String(label) : `${d.toLocaleDateString()} ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+                          }}
                         />
                         <Line 
                           type="monotone" 
                           dataKey="value" 
                           name="Volume" 
-                          stroke="#22C55E" 
+                          stroke="#38BDF8" 
                           strokeWidth={2.5} 
-                          dot={{ fill: "#22C55E", r: 4 }} 
+                          dot={{ fill: "#38BDF8" , r: 4 }} 
                         />
                       </LineChart>
                     </ResponsiveContainer>
@@ -162,11 +172,21 @@ export default function StatisticSection() {
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={userStats.progress}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
-                          <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} />
+                          <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} 
+                            tickFormatter={(val: any) => {
+                              if (!val) return "";
+                              const d = new Date(val);
+                              return isNaN(d.getTime()) ? String(val) : d.toLocaleDateString([], { day: '2-digit', month: '2-digit' });
+                            }} />
                           <YAxis stroke="#94a3b8" fontSize={12} domain={['dataMin - 1', 'dataMax + 1']} />
                           <Tooltip 
                             contentStyle={{ backgroundColor: "#0F172A", borderColor: "#334155", borderRadius: "8px" }}
-                            itemStyle={{ color: "#38BDF8" }}
+                            itemStyle={{ color: "#38BDF8" }}  
+                            labelFormatter={(label: any) => {
+                              if (!label) return "";
+                              const d = new Date(label);
+                              return isNaN(d.getTime()) ? String(label) : `${d.toLocaleDateString()} ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+                            }}
                           />
                           <Line 
                             type="monotone" 
@@ -174,7 +194,7 @@ export default function StatisticSection() {
                             name="Weight" 
                             stroke="#38BDF8" 
                             strokeWidth={2.5} 
-                            dot={{ fill: "#38BDF8", r: 4 }} 
+                            dot={{ fill: "#38BDF8" , r: 4 }} 
                           />
                         </LineChart>
                       </ResponsiveContainer>
@@ -188,35 +208,84 @@ export default function StatisticSection() {
             {/* ВКЛАДКА 2: EXERCISES STATS */}
             {activeTab === "exercises" && (
               <div className="text-slate-400 py-6 text-center">
-                {/* Тут сделаем селект упражнения и его графики */}
                 {exStats && <ExerciseSelect exercises={exStats?.map((ex)=>ex.exercise)} selectedId={selectedExerciseId} onSelect={(ex) => setSelectedExerciseId(ex.id)
                 }></ExerciseSelect>}
-                {selectedExerciseId && exStats &&  <div className="h-64 w-full mt-4"><ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={exStats[selectedExerciseId-1].progress}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
-                          <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} tickFormatter={(str) => {
-    const date = new Date(str);
-    return date.toLocaleDateString([], { day: '2-digit', month: '2-digit' });
-  }}/>
-                          <YAxis stroke="#94a3b8" fontSize={12} domain={['dataMin - 1', 'dataMax + 1']} />
-                          <Tooltip 
-                            contentStyle={{ backgroundColor: "#0F172A", borderColor: "#334155", borderRadius: "8px" }}
-                            itemStyle={{ color: "#38BDF8" }} labelFormatter={(label:any) => {
-                              if (!label) return "";
-                              const date = new Date(label);
-                              return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-                            }}
-                          />
-                          <Line 
-                            type="monotone" 
-                            dataKey="value" 
-                            name="Weight" 
-                            stroke="#22C55E" 
-                            strokeWidth={2.5} 
-                            dot={{ fill: "##22C55E", r: 4 }} 
-                          />
-                        </LineChart>
-                      </ResponsiveContainer></div>}
+                {selectedExerciseId && exStats && (() => {
+  const currentStat = exStats.find((item) => item.exercise.id === selectedExerciseId);
+
+  if (!currentStat) return null;
+  const lastUseFormatted = currentStat.lastUse 
+    ? new Date(currentStat.lastUse).toLocaleDateString([], { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric' 
+      }) 
+    : 'Never';
+
+  return (
+    <div className="space-y-6 mt-4">
+      {/* Грид с карточками показателей */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40 flex flex-col justify-between">
+          <span className="text-xs font-medium text-slate-400">Current Weight</span>
+          <p className="text-2xl font-bold text-white mt-1">
+            {currentStat.currentWeight ?? 0} <span className="text-base font-normal text-slate-400">kg</span>
+          </p>
+        </div>
+
+        <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40 flex flex-col justify-between">
+          <span className="text-xs font-medium text-slate-400">Max Weight</span>
+          <p className="text-2xl font-bold text-emerald-400 mt-1">
+            {currentStat.maxWeight ?? 0} <span className="text-base font-normal text-slate-400">kg</span>
+          </p>
+        </div>
+
+        <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40 flex flex-col justify-between col-span-2">
+          <span className="text-xs font-medium text-slate-400">Last Time Used</span>
+          <p className="text-xl font-semibold text-primary mt-1 text-sm">
+            {lastUseFormatted}
+          </p>
+        </div>
+      </div>
+
+      {/* Контейнер под график Recharts */}
+      <div className="h-64 w-full bg-slate-900/50 p-4 rounded-xl border border-border/40">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={currentStat.progress}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
+            <XAxis 
+              dataKey="date" 
+              stroke="#94a3b8" 
+              fontSize={12}
+              tickFormatter={(val: any) => {
+                if (!val) return "";
+                const d = new Date(val);
+                return isNaN(d.getTime()) ? String(val) : d.toLocaleDateString([], { day: '2-digit', month: '2-digit' });
+              }}
+            />
+            <YAxis stroke="#94a3b8" fontSize={12} domain={['dataMin - 2', 'dataMax + 2']} />
+            <Tooltip 
+              contentStyle={{ backgroundColor: "#0F172A", borderColor: "#334155", borderRadius: "8px" }}
+              itemStyle={{ color: "#38BDF8" }}
+              labelFormatter={(label: any) => {
+                if (!label) return "";
+                const d = new Date(label);
+                return isNaN(d.getTime()) ? String(label) : `${d.toLocaleDateString()} ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+              }}
+            />
+            <Line 
+              type="monotone" 
+              dataKey="value" 
+              name="Weight" 
+              stroke="#38BDF8" 
+              strokeWidth={2.5} 
+              dot={{ fill: "#38BDF8", r: 4 }} 
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </div>);
+})()}
               </div>
             )}
           </div>
