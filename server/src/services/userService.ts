@@ -43,7 +43,8 @@ export class UserService{
                 email: user.email,
                 height:user.height ?? 0,
                 weight:user.weight ?? 0,
-                trainingCount:user.workouts.length
+                trainingCount:user.workouts.length,
+                birthDate:user.birthDate!
             }
         };
     }

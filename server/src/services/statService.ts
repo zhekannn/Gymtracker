@@ -3,57 +3,72 @@ import { IUserStats, IExerciseStats, IStatPoint, IExercisesList } from "../../..
 import { AppDataSource } from "../data-source.js";
 import { Workout } from "../entities/Workout.js";
 import { Exercise } from "../entities/Exercise.js";
+
 export class StatService {
   private workoutRepo = AppDataSource.getRepository(Workout);
-  private exRepo=AppDataSource.getRepository(Exercise);
+  private exRepo = AppDataSource.getRepository(Exercise);
+
+  /**
+   * Helper для нормализации даты в красивую локальную строку
+   * @param date - объект Date или строка
+   * @param includeTime - включать ли время (ЧЧ:ММ)
+   */
+  private formatDate(date: Date | string, includeTime: boolean = false): string {
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return "";
+  
+    if (!includeTime) {
+      return d.toLocaleDateString("ru-RU", { day: "2-digit", month: "numeric" });
+    }
+  
+    // Используем toLocaleString для корректного форматирования с временем
+    const datePart = d.toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit", year:"2-digit"});
+    const timePart = d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+  
+    return `${datePart} ${timePart}`;
+  }
+
   public async getUserStats(userId: number): Promise<IUserStats> {
-    // 1. Вычисляем дату "30 дней назад"
     const oneMonthAgo = new Date();
     oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
 
-    // 2. Достаем тренировки пользователя за последний месяц
     const workouts = await this.workoutRepo.find({
       where: {
         userId: userId,
         completedAt: MoreThanOrEqual(oneMonthAgo),
       },
       order: {
-        completedAt: "ASC", // Сортируем от старых к новым для правильного графика
+        completedAt: "ASC",
       },
     });
-    // 3. Считаем общий тоннаж за месяц и формируем точки для графиков
-    let totalWeightInMonth = 0;
 
-    // Группируем объем (тоннаж) по дням для totalWeightPerWorkout
+    let totalWeightInMonth = 0;
     const weightPerDayMap = new Map<string, number>();
-    
-    // Группируем вес тела по дням для progress (динамика веса тела)
     const bodyWeightMap = new Map<string, number>();
 
     for (const workout of workouts) {
-      // Форматируем дату в YYYY-MM-DD
-      const dateStr = new Date(workout.completedAt).toISOString().split("T")[0];
+      // Для общего веса тела и тоннажа за день берем дату БЕЗ времени ("01.08")
+      const dayKey = this.formatDate(workout.completedAt, true);
 
-      // Вычисляем суммарный объем тренировки: сумма (sets * reps * weight) по всем упражнениям
-      const workoutVolume = workout.exercisesSnapshot.reduce((acc, ex) => {
+      let workoutVolume = workout.exercisesSnapshot.reduce((acc, ex) => {
         const sets = Number(ex.sets) || 0;
         const reps = Number(ex.reps) || 0;
         const weight = Number(ex.weight) || 0;
         return acc + sets * reps * weight;
       }, 0);
+      workoutVolume=workoutVolume/1000;
       totalWeightInMonth += workoutVolume;
 
       // Накапливаем тоннаж за день
-      const currentDayVolume = weightPerDayMap.get(dateStr!) || 0;
-      weightPerDayMap.set(dateStr!, currentDayVolume + workoutVolume);
+      const currentDayVolume = weightPerDayMap.get(dayKey) || 0;
+      weightPerDayMap.set(dayKey, currentDayVolume + workoutVolume);
 
-      // Записываем вес тела (если он был указан в тренировке)
+      // Записываем вес тела за этот день
       if (workout.bodyWeight && workout.bodyWeight > 0) {
-        bodyWeightMap.set(dateStr!, workout.bodyWeight);
+        bodyWeightMap.set(dayKey, workout.bodyWeight);
       }
     }
 
-    // 4. Преобразуем Map в массивы IStatPoint[]
     const totalWeightPerWorkout: IStatPoint[] = Array.from(weightPerDayMap.entries()).map(
       ([date, value]) => ({ date, value })
     );
@@ -62,10 +77,10 @@ export class StatService {
       ([date, value]) => ({ date, value })
     );
 
-    // Берем самый последний известный вес тела или 0
     const latestBodyWeight = workouts.length > 0 ? workouts[workouts.length - 1]!.bodyWeight || 0 : 0;
-    const workoutsInMonth=workouts.length;
-    const totalWorkouts=await this.workoutRepo.count({where:{userId:userId}});
+    const workoutsInMonth = workouts.length;
+    const totalWorkouts = await this.workoutRepo.count({ where: { userId } });
+
     return {
       weight: latestBodyWeight,
       workoutsInMonth,
@@ -77,37 +92,42 @@ export class StatService {
   }
 
   public async getExerciseStats(userId: number): Promise<IExerciseStats[]> {
-    // Достаем все тренировки пользователя
     const workouts = await this.workoutRepo.find({
       where: { userId },
       order: { completedAt: "ASC" },
     });
-    if(workouts.length==0) return [];
-    // Мапа для агрегации статистики по каждому уникальному exerciseId
+
+    if (workouts.length === 0) return [];
+
+    // Предзагрузка всех упражнений, чтобы исключить await внутри циклов
+    const allExercises = await this.exRepo.find();
+    const exerciseCache = new Map<number, Exercise>(allExercises.map(e => [e.id, e]));
+
     const statsMap = new Map<number, IExerciseStats>();
 
     for (const workout of workouts) {
-      const dateStr = new Date(workout.completedAt).toISOString();
-    if(!dateStr) continue;
+      // Для упражнений сохраняем дату СО ВРЕМЕНЕМ ("01.08 15:37")
+      const dateTimeStr = this.formatDate(workout.completedAt, true);
+      if (!dateTimeStr) continue;
+
       for (const ex of workout.exercisesSnapshot) {
         if (!ex.exerciseId) continue;
 
         const exWeight = Number(ex.weight) || 0;
+        const dbEx = exerciseCache.get(ex.exerciseId);
 
         if (!statsMap.has(ex.exerciseId)) {
-          const exercise=await this.exRepo.findOneBy({id:ex.exerciseId});
           statsMap.set(ex.exerciseId, {
             exercise: {
               id: ex.exerciseId,
               name: ex.name,
-              muscleGroup:exercise?.muscleGroup,
-              description:exercise?.description
-              // По необходимости добавьте остальные поля IExercisesList
+              muscleGroup: dbEx?.muscleGroup,
+              description: dbEx?.description
             } as IExercisesList,
             maxWeight: exWeight,
             currentWeight: exWeight,
-            lastUse: dateStr,
-            progress: [{ date: dateStr, value: exWeight }],
+            lastUse: dateTimeStr,
+            progress: [{ date: dateTimeStr, value: exWeight }],
           });
         } else {
           const stat = statsMap.get(ex.exerciseId)!;
@@ -117,8 +137,10 @@ export class StatService {
           }
           
           stat.currentWeight = exWeight;
-          stat.lastUse = dateStr;
-          stat.progress.push({ date: dateStr, value: exWeight });
+          stat.lastUse = dateTimeStr;
+          
+          // Добавляем точку (теперь у каждой точки уникальное время "01.08 15:37", "01.08 16:10")
+          stat.progress.push({ date: dateTimeStr, value: exWeight });
         }
       }
     }

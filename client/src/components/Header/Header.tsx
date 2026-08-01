@@ -130,7 +130,7 @@ export default function Header() {
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel variant="destructive">Cancel</AlertDialogCancel>
                 <AlertDialogAction onClick={handleClick}>Continue</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

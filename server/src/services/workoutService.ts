@@ -10,7 +10,7 @@ export class WorkoutService{
         return workouts;
         }
     public async create(workout:IWorkout, userId:number){
-        const newWorkout=this.workoutRepo.create({...workout, userId:userId});
+        const newWorkout=this.workoutRepo.create({...workout, userId:userId,completedAt: new Date()});
         if(workout.bodyWeight && workout.bodyWeight>0){
             await this.userRepo.update(userId, {
                 weight: workout.bodyWeight,

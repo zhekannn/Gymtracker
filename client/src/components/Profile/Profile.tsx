@@ -62,7 +62,7 @@ export default function Profile(){
             <span className="font-semibold text-[#4ADE80]">{user.weight} kg</span>
           </div>
           <div className="flex justify-between items-center p-3 bg-slate-900/50 rounded-lg border border-slate-800">
-            <span className="flex items-center gap-2 text-slate-400 text-sm"><Calendar size={16}/> Age Age</span>
+            <span className="flex items-center gap-2 text-slate-400 text-sm"><Calendar size={16}/> Age</span>
             <span className="font-semibold text-[#4ADE80]">{getAge(user.birthDate)} yo</span>
           </div>
         </div>

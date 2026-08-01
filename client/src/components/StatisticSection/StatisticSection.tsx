@@ -122,7 +122,7 @@ export default function StatisticSection() {
                   <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40">
                     <span className="text-xs font-medium text-slate-400">Volume This Month</span>
                     <p className="text-2xl font-bold text-primary mt-1">
-                      {userStats.totalWeightInMonth?.toLocaleString() || 0} kg
+                      {userStats.totalWeightInMonth?.toLocaleString() || 0} t
                     </p>
                   </div>
                 </div>
@@ -130,37 +130,33 @@ export default function StatisticSection() {
                 {showGraph && <>
                 {/* График 1: Объем за тренировки (Volume Per Workout) */}
                 <div className="bg-slate-900/50 p-5 rounded-xl border border-border/40">
-                  <h4 className="text-sm font-semibold text-slate-300 mb-4">Volume per Workout (kg)</h4>
+                  <h4 className="text-sm font-semibold text-slate-300 mb-4">Volume per Workout (t)</h4>
                   <div className="h-64 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={userStats.totalWeightPerWorkout}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
-                        <XAxis dataKey="date" stroke="#94a3b8" fontSize={12}
-                          tickFormatter={(val: any) => {
-                            if (!val) return "";
-                            const d = new Date(val);
-                            return isNaN(d.getTime()) ? String(val) : d.toLocaleDateString([], { day: '2-digit', month: '2-digit' });
-                          }} />
-                        <YAxis stroke="#94a3b8" fontSize={12} />
-                        <Tooltip 
-                          contentStyle={{ backgroundColor: "#0F172A", borderColor: "#334155", borderRadius: "8px" }}
-                          itemStyle={{ color: "#22C55E" }}  
-                          labelFormatter={(label: any) => {
-                            if (!label) return "";
-                            const d = new Date(label);
-                            return isNaN(d.getTime()) ? String(label) : `${d.toLocaleDateString()} ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-                          }}
-                        />
-                        <Line 
-                          type="monotone" 
-                          dataKey="value" 
-                          name="Volume" 
-                          stroke="#38BDF8" 
-                          strokeWidth={2.5} 
-                          dot={{ fill: "#38BDF8" , r: 4 }} 
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
+                  <ResponsiveContainer width="100%" height="100%">
+  <LineChart data={userStats.totalWeightPerWorkout}>
+    <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
+    <XAxis 
+      dataKey="date" 
+      stroke="#94a3b8" 
+      fontSize={12}
+      tickFormatter={(val: string) => val || ""}
+    />
+    <YAxis stroke="#94a3b8" fontSize={12} />
+    <Tooltip 
+      contentStyle={{ backgroundColor: "#0F172A", borderColor: "#334155", borderRadius: "8px" }}
+      itemStyle={{ color: "#22C55E" }}  
+      labelFormatter={(label: any) => label || ""}
+    />
+    <Line 
+      type="monotone" 
+      dataKey="value" 
+      name="Volume" 
+      stroke="#38BDF8" 
+      strokeWidth={2.5} 
+      dot={{ fill: "#38BDF8" , r: 4 }} 
+    />
+  </LineChart>
+</ResponsiveContainer>
                   </div>
                 </div>
   
@@ -169,35 +165,31 @@ export default function StatisticSection() {
                   <div className="bg-slate-900/50 p-5 rounded-xl border border-border/40">
                     <h4 className="text-sm font-semibold text-slate-300 mb-4">Body Weight History (kg)</h4>
                     <div className="h-64 w-full">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={userStats.progress}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
-                          <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} 
-                            tickFormatter={(val: any) => {
-                              if (!val) return "";
-                              const d = new Date(val);
-                              return isNaN(d.getTime()) ? String(val) : d.toLocaleDateString([], { day: '2-digit', month: '2-digit' });
-                            }} />
-                          <YAxis stroke="#94a3b8" fontSize={12} domain={['dataMin - 1', 'dataMax + 1']} />
-                          <Tooltip 
-                            contentStyle={{ backgroundColor: "#0F172A", borderColor: "#334155", borderRadius: "8px" }}
-                            itemStyle={{ color: "#38BDF8" }}  
-                            labelFormatter={(label: any) => {
-                              if (!label) return "";
-                              const d = new Date(label);
-                              return isNaN(d.getTime()) ? String(label) : `${d.toLocaleDateString()} ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-                            }}
-                          />
-                          <Line 
-                            type="monotone" 
-                            dataKey="value" 
-                            name="Weight" 
-                            stroke="#38BDF8" 
-                            strokeWidth={2.5} 
-                            dot={{ fill: "#38BDF8" , r: 4 }} 
-                          />
-                        </LineChart>
-                      </ResponsiveContainer>
+                    <ResponsiveContainer width="100%" height="100%">
+  <LineChart data={userStats.progress}>
+    <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
+    <XAxis 
+      dataKey="date" 
+      stroke="#94a3b8" 
+      fontSize={12} 
+      tickFormatter={(val: string) => val || ""}
+    />
+    <YAxis stroke="#94a3b8" fontSize={12} domain={['dataMin - 1', 'dataMax + 1']} />
+    <Tooltip 
+      contentStyle={{ backgroundColor: "#0F172A", borderColor: "#334155", borderRadius: "8px" }}
+      itemStyle={{ color: "#38BDF8" }}  
+      labelFormatter={(label: any) => label || ""}
+    />
+    <Line 
+      type="monotone" 
+      dataKey="value" 
+      name="Weight" 
+      stroke="#38BDF8" 
+      strokeWidth={2.5} 
+      dot={{ fill: "#38BDF8" , r: 4 }} 
+    />
+  </LineChart>
+</ResponsiveContainer>
                     </div>
                   </div>
                 )}</>}
@@ -224,67 +216,69 @@ export default function StatisticSection() {
 
   return (
     <div className="space-y-6 mt-4">
-      {/* Грид с карточками показателей */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40 flex flex-col justify-between">
-          <span className="text-xs font-medium text-slate-400">Current Weight</span>
-          <p className="text-2xl font-bold text-white mt-1">
-            {currentStat.currentWeight ?? 0} <span className="text-base font-normal text-slate-400">kg</span>
-          </p>
-        </div>
+  {/* Грид с карточками показателей */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40 flex flex-col justify-between">
+      <span className="text-xs font-medium text-slate-400">Current Weight</span>
+      <p className="text-2xl font-bold text-white mt-1">
+        {currentStat.currentWeight ?? 0} <span className="text-base font-normal text-slate-400">kg</span>
+      </p>
+    </div>
 
-        <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40 flex flex-col justify-between">
-          <span className="text-xs font-medium text-slate-400">Max Weight</span>
-          <p className="text-2xl font-bold text-emerald-400 mt-1">
-            {currentStat.maxWeight ?? 0} <span className="text-base font-normal text-slate-400">kg</span>
-          </p>
-        </div>
+    <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40 flex flex-col justify-between">
+      <span className="text-xs font-medium text-slate-400">Max Weight</span>
+      <p className="text-2xl font-bold text-emerald-400 mt-1">
+        {currentStat.maxWeight ?? 0} <span className="text-base font-normal text-slate-400">kg</span>
+      </p>
+    </div>
 
-        <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40 flex flex-col justify-between col-span-2">
-          <span className="text-xs font-medium text-slate-400">Last Time Used</span>
-          <p className="text-xl font-semibold text-primary mt-1 text-sm">
-            {lastUseFormatted}
-          </p>
-        </div>
-      </div>
+    <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40 flex flex-col justify-between col-span-2">
+      <span className="text-xs font-medium text-slate-400">Last Time Used</span>
+      <p className="text-xl font-semibold text-primary mt-1 text-sm">
+        {/* Выводим готовое значение напрямую */}
+        {currentStat.lastUse.toString() || "—"}
+      </p>
+    </div>
+  </div>
 
-      {/* Контейнер под график Recharts */}
-      <div className="h-64 w-full bg-slate-900/50 p-4 rounded-xl border border-border/40">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={currentStat.progress}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
-            <XAxis 
-              dataKey="date" 
-              stroke="#94a3b8" 
-              fontSize={12}
-              tickFormatter={(val: any) => {
-                if (!val) return "";
-                const d = new Date(val);
-                return isNaN(d.getTime()) ? String(val) : d.toLocaleDateString([], { day: '2-digit', month: '2-digit' });
-              }}
-            />
-            <YAxis stroke="#94a3b8" fontSize={12} domain={['dataMin - 2', 'dataMax + 2']} />
-            <Tooltip 
-              contentStyle={{ backgroundColor: "#0F172A", borderColor: "#334155", borderRadius: "8px" }}
-              itemStyle={{ color: "#38BDF8" }}
-              labelFormatter={(label: any) => {
-                if (!label) return "";
-                const d = new Date(label);
-                return isNaN(d.getTime()) ? String(label) : `${d.toLocaleDateString()} ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-              }}
-            />
-            <Line 
-              type="monotone" 
-              dataKey="value" 
-              name="Weight" 
-              stroke="#38BDF8" 
-              strokeWidth={2.5} 
-              dot={{ fill: "#38BDF8", r: 4 }} 
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    </div>);
+  {/* Контейнер под график Recharts */}
+  <div className="h-64 w-full bg-slate-900/50 p-4 rounded-xl border border-border/40">
+    <ResponsiveContainer width="100%" height="100%">
+      <LineChart data={currentStat.progress}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
+        
+        {/* Простая выгрузка готовой строки "01.08 16:03" без new Date() */}
+        <XAxis 
+          dataKey="date" 
+          stroke="#94a3b8" 
+          fontSize={12}
+          padding={{ left: 20, right: 20 }}
+          tickFormatter={(val: string) => val || ""}
+        />
+        
+        <YAxis stroke="#94a3b8" fontSize={12} domain={['dataMin - 2', 'dataMax + 2']} />
+        
+        <Tooltip 
+          trigger="hover"
+          wrapperStyle={{ pointerEvents: 'none' }}
+          contentStyle={{ backgroundColor: "#0F172A", borderColor: "#334155", borderRadius: "8px" }}
+          itemStyle={{ color: "#38BDF8" }}
+          labelFormatter={(label: any) => label || ""}
+        />
+        
+        <Line 
+          activeDot={{ r: 7, stroke: "#38BDF8", strokeWidth: 2 }}
+          type="linear"
+          dataKey="value" 
+          name="Weight" 
+          stroke="#38BDF8" 
+          strokeWidth={2.5} 
+          dot={{ fill: "#38BDF8", r: 4 }} 
+        />
+      </LineChart>
+    </ResponsiveContainer>
+  </div>
+</div>);
 })()}
               </div>
             )}

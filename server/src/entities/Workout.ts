@@ -6,8 +6,8 @@ import { IExercise, IWorkout } from '../../../shared/types.js';
 export class Workout implements IWorkout{
     @PrimaryGeneratedColumn()
     id: number;
-    @CreateDateColumn({type:"date"})
-    completedAt: Date;
+    @CreateDateColumn({ type: "timestamptz"})
+    completedAt!: Date;
     @Column({ nullable: true,type:"varchar",length:255 })
     planNameSnapshot?: string;
     @Column({ type: "json" })
