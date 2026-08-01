@@ -1,5 +1,5 @@
-import { AppDataSource } from "../data-source";
-import { Exercise } from "../entities/Exercise";
+import { AppDataSource } from "../data-source.js";
+import { Exercise } from "../entities/Exercise.js";
 import { Request,Response } from "express";
 export async function exSelect(req:Request,res:Response) {
     try{

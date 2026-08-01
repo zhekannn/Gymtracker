@@ -1,8 +1,8 @@
-import { AppDataSource } from "../data-source";
+import { AppDataSource } from "../data-source.js";
 import { Request,Response } from "express";
-import { User } from "../entities/User";
-import { IPlan } from "../../../shared/types";
-import { PlanService } from "../services/planService";
+import { User } from "../entities/User.js";
+import { IPlan } from "../../../shared/types.js";
+import { PlanService } from "../services/planService.js";
 const planServ=new PlanService();
 export async function createPlan(req:Request,res:Response) {
     try{

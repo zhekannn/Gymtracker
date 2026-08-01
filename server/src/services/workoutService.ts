@@ -1,7 +1,7 @@
-import { Workout } from "../entities/Workout";
-import { AppDataSource } from "../data-source";
-import { IWorkout } from "../../../shared/types";
-import { User } from "../entities/User";
+import { Workout } from "../entities/Workout.js";
+import { AppDataSource } from "../data-source.js";
+import { IWorkout } from "../../../shared/types.js";
+import { User } from "../entities/User.js";
 export class WorkoutService{
     private workoutRepo=AppDataSource.getRepository(Workout);
     private userRepo=AppDataSource.getRepository(User);

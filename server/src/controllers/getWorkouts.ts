@@ -1,5 +1,4 @@
-import { IWorkout } from "../../../shared/types";
-import { WorkoutService } from "../services/workoutService";
+import { WorkoutService } from "../services/workoutService.js";
 import { Request, Response } from "express";
 export async function getWorkouts(req: Request, res: Response) {
     try {

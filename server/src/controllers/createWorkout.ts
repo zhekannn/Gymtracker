@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
-import { WorkoutService } from "../services/workoutService";
-import { IWorkout } from "../../../shared/types";
-import { UserService } from "../services/userService";
+import { WorkoutService } from "../services/workoutService.js";
+import { IWorkout } from "../../../shared/types.js";
 const workoutService = new WorkoutService();
 
 export async function createWorkout(req: Request, res: Response) {

@@ -5,6 +5,7 @@ export interface IUser {
     weight?: number;
     height?: number;
     trainingCount?:number;
+    birthDate?:Date;
 }
 export interface IExercise {
     exerciseId: number;
@@ -53,4 +54,13 @@ export interface IUserStats{
 export interface IStatPoint {
   date: string;
   value: number; 
+}
+export interface IGeneratePlanInfo{
+    goal:string;
+    daysCount:number;
+    experience:string;
+    additionalNotes:string;
+    age?: number;
+    weight?: number; 
+    height?: number; 
 }

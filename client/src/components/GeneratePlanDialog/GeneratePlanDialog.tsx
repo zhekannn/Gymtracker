@@ -11,7 +11,8 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { IPlan } from "../../../../shared/types";
+import { IGeneratePlanInfo, IPlan, IUser } from "../../../../shared/types";
+import { getAge } from "../../getAge";
 
 interface GenerateAiPlanDialogProps {
   onPlanGenerated: (serverMessage: string, newPlan?: IPlan) => void;
@@ -30,6 +31,12 @@ export default function GenerateAiPlanDialog({ onPlanGenerated }: GenerateAiPlan
     setLoading(true);
 
     try {
+      const user=localStorage.getItem('user');
+      if(!user) return;
+      const userData:IUser=JSON.parse(user);
+      const weight=userData.weight;
+      const height=userData.height;
+      const age=getAge(userData.birthDate);
       const response = await fetch("/api/ai/generate-plan", {
         method: "POST",
         headers: {
@@ -41,7 +48,10 @@ export default function GenerateAiPlanDialog({ onPlanGenerated }: GenerateAiPlan
           daysCount,
           experience,
           additionalNotes,
-        }),
+          age,
+          weight,
+          height
+        } as IGeneratePlanInfo),
       });
 
       const data = await response.json();

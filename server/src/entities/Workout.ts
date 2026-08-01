@@ -1,25 +1,25 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, JoinColumn, AfterLoad } from 'typeorm';
-import { User } from './User';
-import { TrainingPlans } from './TrainingPlans';
-import { IExercise, IWorkout } from '../../../shared/types'; 
+import { User } from './User.js';
+import { TrainingPlans } from './TrainingPlans.js';
+import { IExercise, IWorkout } from '../../../shared/types.js'; 
 @Entity({ name: "workouts" })
 export class Workout implements IWorkout{
     @PrimaryGeneratedColumn()
     id: number;
-    @CreateDateColumn()
+    @CreateDateColumn({type:"date"})
     completedAt: Date;
-    @Column({ nullable: true })
+    @Column({ nullable: true,type:"varchar",length:255 })
     planNameSnapshot?: string;
     @Column({ type: "json" })
     exercisesSnapshot: IExercise[];
-    @Column({ nullable: true })
+    @Column({ nullable: true,type:"varchar" })
     note?: string;
-    @Column()
+    @Column({type:"int"})
     userId: number;
     @ManyToOne(() => User, (user) => user.workouts)
     @JoinColumn({name:"userId"})
     user: User;
-    @Column({ nullable: true })
+    @Column({ nullable: true, type:"int" })
     planId?: number;
     @ManyToOne(() => TrainingPlans, { nullable: true, onDelete: 'SET NULL' })
     @JoinColumn({ name: "planId" })

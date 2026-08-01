@@ -1,16 +1,17 @@
 import { Router } from 'express';
-import {register} from '../controllers/userRegister'
-import  {login} from '../controllers/userLogin';
-import { plansSelect } from '../controllers/plansSelect';
-import { authMiddleware } from '../middleware/authMiddleware';
-import { exSelect } from '../controllers/exSelect';
-import { createPlan } from '../controllers/createPlan';
-import { deletePlan } from '../controllers/deletePlan';
-import { alterPlan } from '../controllers/alterPlan';
-import { getWorkouts } from '../controllers/getWorkouts';
-import { createWorkout } from '../controllers/createWorkout';
-import { deleteWorkout } from '../controllers/deleteWorkout';
-import { getStats } from '../controllers/getStats';
+import {register} from '../controllers/userRegister.js'
+import  {login} from '../controllers/userLogin.js';
+import { plansSelect } from '../controllers/plansSelect.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
+import { exSelect } from '../controllers/exSelect.js';
+import { createPlan } from '../controllers/createPlan.js';
+import { deletePlan } from '../controllers/deletePlan.js';
+import { alterPlan } from '../controllers/alterPlan.js';
+import { getWorkouts } from '../controllers/getWorkouts.js';
+import { createWorkout } from '../controllers/createWorkout.js';
+import { deleteWorkout } from '../controllers/deleteWorkout.js';
+import { getStats } from '../controllers/getStats.js';
+import { GeneratePlan } from '../controllers/generatePlan.js';
 const router = Router();
 router.post('/login', login);
 router.post('/users', register);
@@ -26,4 +27,5 @@ router.get('/workouts', authMiddleware, getWorkouts);
 router.post('/workout', authMiddleware,createWorkout);
 router.delete('/deleteWorkout/:id', authMiddleware, deleteWorkout)
 router.get('/stats',authMiddleware, getStats);
+router.post('/ai/generate-plan', authMiddleware, GeneratePlan);
 export default router;

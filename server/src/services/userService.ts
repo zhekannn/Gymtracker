@@ -1,10 +1,10 @@
-import { AppDataSource } from "../data-source";
-import { User } from "../entities/User";
-import { IUser } from "../../../shared/types";
+import { AppDataSource } from "../data-source.js";
+import { User } from "../entities/User.js";
+import { IUser } from "../../../shared/types.js";
 import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../config/jwt";
-import { sendMail } from "../services/sendMail";
+import { JWT_SECRET } from "../config/jwt.js";
+import { sendMail } from "../services/sendMail.js";
 export class UserService{
     private userRepo=AppDataSource.getRepository(User);
     public async checkName(username:string): Promise<User | null>{

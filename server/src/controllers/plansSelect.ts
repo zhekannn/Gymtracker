@@ -1,6 +1,6 @@
-import { IPlan } from "../../../shared/types";
+import { IPlan } from "../../../shared/types.js";
 import { Request,Response } from "express";
-import { PlanService } from "../services/planService";
+import { PlanService } from "../services/planService.js";
 const plan=new PlanService();
 export async function plansSelect(req:Request,res:Response) {
     try{

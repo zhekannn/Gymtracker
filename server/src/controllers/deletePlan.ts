@@ -1,5 +1,5 @@
 import { Request,Response } from "express";
-import { PlanService } from "../services/planService";
+import { PlanService } from "../services/planService.js";
 const plan=new PlanService();
 export async function deletePlan(req:Request, res:Response){
     try{

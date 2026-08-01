@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../config/jwt";
-import { sendMail } from "../services/sendMail";
-import { UserService } from "../services/userService";
-import { IUser } from "../../../shared/types";
+import { JWT_SECRET } from "../config/jwt.js";
+import { sendMail } from "../services/sendMail.js";
+import { UserService } from "../services/userService.js";
+import { IUser } from "../../../shared/types.js";
 const user=new UserService();
 export async function register(req:Request, res:Response) {
     try {

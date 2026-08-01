@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { WorkoutService } from "../services/workoutService";
+import { WorkoutService } from "../services/workoutService.js";
 export async function deleteWorkout(req:Request, res:Response){
     try{
     const workoutService=new WorkoutService();

@@ -1,21 +1,23 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany} from "typeorm";
-import {IUser} from "../../../shared/types"
-import { TrainingPlans } from "./TrainingPlans";
-import { Workout } from "./Workout";
+import {IUser} from "../../../shared/types.js"
+import { TrainingPlans } from "./TrainingPlans.js";
+import { Workout } from "./Workout.js";
 @Entity({ name: "users" })
 export class User implements IUser{
     @PrimaryGeneratedColumn()
     id: number;
-    @Column()
+    @Column({type:"varchar",length:255})
     username:string;
-    @Column({ unique: true })
+    @Column({ unique: true,type:"varchar",length:255 })
     email: string;
     @Column({type: "decimal", precision: 5, scale: 2, nullable: true })
     weight?: number;
-    @Column()
+    @Column({type:"int"})
     height?: number;
-    @Column()
+    @Column({type:"varchar",length:255})
     password: string;
+    @Column({ type: "date", nullable: true })
+    birthDate?: Date;
     @OneToMany(()=>TrainingPlans, (training)=> training.user)
     plans:TrainingPlans[];
     @OneToMany(()=>Workout, (workout)=> workout.user)

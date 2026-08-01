@@ -1,8 +1,8 @@
 import { MoreThanOrEqual } from "typeorm";
-import { IUserStats, IExerciseStats, IStatPoint, IExercisesList } from "../../../shared/types";
-import { AppDataSource } from "../data-source";
-import { Workout } from "../entities/Workout";
-import { Exercise } from "../entities/Exercise";
+import { IUserStats, IExerciseStats, IStatPoint, IExercisesList } from "../../../shared/types.js";
+import { AppDataSource } from "../data-source.js";
+import { Workout } from "../entities/Workout.js";
+import { Exercise } from "../entities/Exercise.js";
 export class StatService {
   private workoutRepo = AppDataSource.getRepository(Workout);
   private exRepo=AppDataSource.getRepository(Exercise);

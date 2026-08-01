@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import {EMAIL_USER, EMAIL_PASS} from "../config/mail";
+import {EMAIL_USER, EMAIL_PASS} from "../config/mail.js";
 export const transporter = nodemailer.createTransport({
     host: "sandbox.smtp.mailtrap.io",
     port: 587,

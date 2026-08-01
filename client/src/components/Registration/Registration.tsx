@@ -3,6 +3,7 @@ import { IUser } from '../../../../shared/types'
 import { useNavigate } from 'react-router-dom';
 import { Alert, AlertTitle } from "@/components/ui/alert"
 import { AlertCircleIcon } from "lucide-react"
+
 export default function Registration() {
   const [message, setMessage] = useState('');
   const [formData, setFormData] = useState({
@@ -11,9 +12,12 @@ export default function Registration() {
     password: '',
     weight: '',
     height: '',
+    birthDate: '',
     rememberMe: false
-  })
+  });
+
   const navigate = useNavigate();
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
@@ -21,14 +25,16 @@ export default function Registration() {
         method: 'POST',
         headers: { 'Content-type': 'application/json' },
         body: JSON.stringify(formData),
-      })
+      });
+
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user as IUser));
-        navigate('/profile', { replace:true,
+        navigate('/profile', { 
+          replace: true,
           state: { loginSuccess: true, username: data.user.username } 
-      });
+        });
       } else {
         const errorData = await response.json();
         setMessage(errorData.message || "Registration error");
@@ -37,6 +43,7 @@ export default function Registration() {
       setMessage(`Request error: ${err}`);
     }
   }
+
   return (
     <>
       <div className="flex flex-col items-center justify-center min-h-[80vh] py-10 px-4">
@@ -48,35 +55,85 @@ export default function Registration() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <label className="flex flex-col gap-1 text-xs font-semibold text-gray-400">
               👤 Username
-              <input type="text" required className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" value={formData.username} onChange={(e) => setFormData({ ...formData, username: e.target.value })} />
+              <input 
+                type="text" 
+                required 
+                className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" 
+                value={formData.username} 
+                onChange={(e) => setFormData({ ...formData, username: e.target.value })} 
+              />
             </label>
             <label className="flex flex-col gap-1 text-xs font-semibold text-gray-400">
               📧 Email
-              <input type="email" required className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+              <input 
+                type="email" 
+                required 
+                className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" 
+                value={formData.email} 
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })} 
+              />
             </label>
           </div>
+
           <label className="flex flex-col gap-1 text-xs font-semibold text-gray-400">
             🔒 Password
-            <input type="password" required className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
+            <input 
+              type="password" 
+              required 
+              className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" 
+              value={formData.password} 
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })} 
+            />
           </label>
 
           <div className="grid grid-cols-2 gap-4">
             <label className="flex flex-col gap-1 text-xs font-semibold text-gray-400">
               ⚖️ Weight (kg)
-              <input type="number" required className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" value={formData.weight} onChange={(e) => setFormData({ ...formData, weight: e.target.value })} />
+              <input 
+                type="number" 
+                required 
+                className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" 
+                value={formData.weight} 
+                onChange={(e) => setFormData({ ...formData, weight: e.target.value })} 
+              />
             </label>
             <label className="flex flex-col gap-1 text-xs font-semibold text-gray-400">
               📏 Height (cm)
-              <input type="number" required className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" value={formData.height} onChange={(e) => setFormData({ ...formData, height: e.target.value})} />
+              <input 
+                type="number" 
+                required 
+                className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" 
+                value={formData.height} 
+                onChange={(e) => setFormData({ ...formData, height: e.target.value })} 
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-xs font-semibold text-gray-400 col-span-2">
+              📅 Birthdate
+              <input 
+                type="date" 
+                required 
+                max={new Date().toISOString().split("T")[0]}
+                className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none [color-scheme:dark]" 
+                value={formData.birthDate} 
+                onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })} 
+              />
             </label>
           </div>
 
           <div className="flex items-center gap-2 text-sm pt-2">
-            <input type="checkbox" className="w-4 h-4 accent-[#22C55E]" checked={formData.rememberMe} onChange={(e) => setFormData({ ...formData, rememberMe: e.target.checked })} />
+            <input 
+              type="checkbox" 
+              className="w-4 h-4 accent-[#22C55E]" 
+              checked={formData.rememberMe} 
+              onChange={(e) => setFormData({ ...formData, rememberMe: e.target.checked })} 
+            />
             <span>Remember me</span>
           </div>
 
-          <button type="submit" className="w-full bg-[#22C55E] hover:bg-[#4ADE80] text-[#020617] font-bold py-3 rounded-lg transition-all mt-4 cursor-pointer">
+          <button 
+            type="submit" 
+            className="w-full bg-[#22C55E] hover:bg-[#4ADE80] text-[#020617] font-bold py-3 rounded-lg transition-all mt-4 cursor-pointer"
+          >
             Sign up
           </button>
 
@@ -84,12 +141,15 @@ export default function Registration() {
             Already have an account? <a href="/" className="text-[#22C55E] font-bold hover:underline ml-1">Log in</a>
           </p>
         </form>
-        {message &&  <Alert variant= "destructive" className="max-w-md border-amber-200 bg-red-200 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-50">
-      <AlertCircleIcon />
-      <AlertTitle className="text-red-600">
-        {message}
-      </AlertTitle>
-    </Alert>}
+
+        {message && (
+          <Alert variant="destructive" className="max-w-md border-amber-200 bg-red-200 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-50 mt-4">
+            <AlertCircleIcon />
+            <AlertTitle className="text-red-600">
+              {message}
+            </AlertTitle>
+          </Alert>
+        )}
       </div>
     </>
   )

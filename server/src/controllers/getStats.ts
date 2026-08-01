@@ -1,5 +1,5 @@
 import { Request,Response } from "express";
-import { StatService } from "../services/statService";
+import { StatService } from "../services/statService.js";
 export async function getStats(req:Request, res:Response) {
     try{
     const userId=Number((req as any).user.id);
