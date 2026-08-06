@@ -50,6 +50,7 @@ export interface IUserStats{
     totalWeightPerWorkout:IStatPoint[];
     progress:IStatPoint[];
     totalWorkouts:number;
+    weightMonthAgo:number;
 }
 export interface IStatPoint {
   date: string;

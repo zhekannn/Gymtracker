@@ -8,8 +8,8 @@ export async function getStats(req:Request, res:Response) {
       }
     const statService=new StatService();
     const [exerciseStats, userStats] = await Promise.all([
-        statService.getExerciseStats(userId),
-        statService.getUserStats(userId),
+        statService.getExerciseStatsCached(userId),
+        statService.getUserStatsCached(userId),
       ]);
     return res.status(200).json({exerciseStats:exerciseStats, userStats:userStats})
     }

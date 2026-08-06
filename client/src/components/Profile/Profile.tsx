@@ -25,8 +25,7 @@ export default function Profile(){
         const parsedUser=JSON.parse(stored);
         setUser(parsedUser);
         if(location.state?.loginSuccess && !hasShown.current){
-            toast.success('Welcome back!', {
-                description: `Рады тебя видеть, ${JSON.parse(stored!).username || "атлет"}!`,
+            toast.success(`Welcome back, ${user?.username || 'athlete'}!`, {
                 duration: 2500,
               });
               hasShown.current=true;
@@ -76,13 +75,13 @@ export default function Profile(){
             {" "}and start progressing!
           </p>
         )}
-        <Button 
+        {/* <Button 
           variant="outline" 
           className="w-full border-primary/50 text-white hover:bg-primary hover:text-black hover:cursor-pointer transition-colors gap-2"
         >
           <Edit2 size={16} />
           Edit profile
-        </Button>
+        </Button> */}
       </div>
 
 

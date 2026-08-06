@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # 1. Кэш Redis
+  redis:
+    image: redis:alpine
+    container_name: app_redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  # 2. База данных PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: app_postgres
+    environment:
+      POSTGRES_USER: postgres
+      DB_PASSWORD: ${DB_PASSWORD:-1605Zhekan}
+      POSTGRES_DB: gymtracker
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+  # 3. Express Backend
+  backend:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: app_backend
+    ports:
+      - "5000:5000"
+    environment:
+      PORT: ${PORT:-5000}
+      DB_HOST: postgres
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USER: postgres
+      DB_PASSWORD: ${DB_PASSWORD:-1605Zhekan}
+      DB_NAME: gymtracker
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - postgres
+      - redis
+    restart: always
+
+  # 4. React Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: app_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: always
+
+volumes:
+  pgdata:

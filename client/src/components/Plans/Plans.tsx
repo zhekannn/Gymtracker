@@ -24,7 +24,7 @@ export default function Plans(){
   },[])
   async function deletePlan(id:number) {
     try{
-      const response=await fetch(`/api/deleteplan/${id}`, {method:'DELETE', headers:{'Authorization': `Bearer ${localStorage.getItem('token')}`}});
+      const response=await fetch(`/api/plans/${id}`, {method:'DELETE', headers:{'Authorization': `Bearer ${localStorage.getItem('token')}`}});
       const data=await response.json()
       if(response.ok){
         setPlans((prev)=>prev.filter(value=>Number(value.id)!==Number(id)))

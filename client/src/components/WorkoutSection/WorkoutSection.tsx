@@ -52,7 +52,7 @@ export default function WorkoutSection() {
       return;
     }
     try {
-      const response = await fetch(`/api/deleteWorkout/${id}`, {
+      const response = await fetch(`/api/workouts/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });

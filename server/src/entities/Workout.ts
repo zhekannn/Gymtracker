@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, JoinColumn, AfterLoad } from 'typeorm';
-import { User } from './User.js';
-import { TrainingPlans } from './TrainingPlans.js';
+import type { User } from './User.js';
+import type { TrainingPlans } from './TrainingPlans.js';
 import { IExercise, IWorkout } from '../../../shared/types.js'; 
 @Entity({ name: "workouts" })
 export class Workout implements IWorkout{
@@ -16,12 +16,12 @@ export class Workout implements IWorkout{
     note?: string;
     @Column({type:"int"})
     userId: number;
-    @ManyToOne(() => User, (user) => user.workouts)
+    @ManyToOne("User", (user:User) => user.workouts)
     @JoinColumn({name:"userId"})
     user: User;
     @Column({ nullable: true, type:"int" })
     planId?: number;
-    @ManyToOne(() => TrainingPlans, { nullable: true, onDelete: 'SET NULL' })
+    @ManyToOne("TrainingPlans", { nullable: true, onDelete: 'SET NULL' })
     @JoinColumn({ name: "planId" })
     plan: TrainingPlans;
     @Column({type: "decimal", precision: 5, scale: 2, nullable: true })

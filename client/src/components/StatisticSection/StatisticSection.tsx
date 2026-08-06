@@ -1,4 +1,4 @@
-import { ChartNoAxesColumnIncreasing, Loader2, Dumbbell, User } from "lucide-react";
+import { ChartNoAxesColumnIncreasing, Loader2, Dumbbell, User, ChevronUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -14,6 +14,7 @@ import {
   CartesianGrid 
 } from 'recharts';
 import ExerciseSelect from "../SelectExercise/SelectExercise";
+import { cn } from "@/lib/utils";
 type TabType = "general" | "exercises";
 export default function StatisticSection() {
     const [exStats, setExStats] = useState<IExerciseStats[] | null>(null);
@@ -125,6 +126,12 @@ export default function StatisticSection() {
                       {userStats.totalWeightInMonth?.toLocaleString() || 0} t
                     </p>
                   </div>
+                  <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40 col-span-3">
+                    <span className="text-xs font-medium text-slate-400">Weight difference(this month)</span>
+                    <p className={cn("text-2xl font-bold mt-1", userStats.weight-userStats.weightMonthAgo<0 ? "text-destructive" : "text-primary")}>
+                      {userStats.weight-userStats.weightMonthAgo>0 ? "+" : ""}{(userStats.weight-userStats.weightMonthAgo).toFixed(1)} kg
+                    </p>
+                  </div>
                 </div>
                 <Button className="hover:cursor-pointer items-center justify-center hover:bg-primary-hover" onClick={()=>setShowGraph((prev)=>!prev)}>{showGraph ? "Hide graphics" : "Show graphics"}</Button>
                 {showGraph && <>
@@ -139,7 +146,7 @@ export default function StatisticSection() {
       dataKey="date" 
       stroke="#94a3b8" 
       fontSize={12}
-      tickFormatter={(val: string) => val || ""}
+      tickFormatter={(val: string) => val.slice(0, 5) || ""}
     />
     <YAxis stroke="#94a3b8" fontSize={12} />
     <Tooltip 
@@ -150,7 +157,7 @@ export default function StatisticSection() {
     <Line 
       type="monotone" 
       dataKey="value" 
-      name="Volume" 
+      name="Volume (t)" 
       stroke="#38BDF8" 
       strokeWidth={2.5} 
       dot={{ fill: "#38BDF8" , r: 4 }} 
@@ -172,7 +179,7 @@ export default function StatisticSection() {
       dataKey="date" 
       stroke="#94a3b8" 
       fontSize={12} 
-      tickFormatter={(val: string) => val || ""}
+      tickFormatter={(val: string) => val.slice(0, 5) || ""}
     />
     <YAxis stroke="#94a3b8" fontSize={12} domain={['dataMin - 1', 'dataMax + 1']} />
     <Tooltip 
@@ -253,7 +260,7 @@ export default function StatisticSection() {
           stroke="#94a3b8" 
           fontSize={12}
           padding={{ left: 20, right: 20 }}
-          tickFormatter={(val: string) => val || ""}
+          tickFormatter={(val: string) => val.slice(0, 5) || ""}
         />
         
         <YAxis stroke="#94a3b8" fontSize={12} domain={['dataMin - 2', 'dataMax + 2']} />

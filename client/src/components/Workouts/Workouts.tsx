@@ -112,7 +112,7 @@ export default function Workouts() {
     };
 
     try {
-      const response = await fetch(`/api/workout`, {
+      const response = await fetch(`/api/workouts`, {
         body: JSON.stringify(newWorkout),
         method: "POST",
         headers: {

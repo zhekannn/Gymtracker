@@ -20,12 +20,12 @@ router.get('/me',authMiddleware, (req, res)=>{
 })
 router.get('/exercises',exSelect);
 router.get('/plans',plansSelect);
-router.post('/addplan', authMiddleware, createPlan);
-router.delete('/deleteplan/:id',authMiddleware, deletePlan);
+router.post('/plans', authMiddleware, createPlan);
+router.delete('/plans/:id',authMiddleware, deletePlan);
 router.put('/plans/:id',authMiddleware, alterPlan);
 router.get('/workouts', authMiddleware, getWorkouts);
-router.post('/workout', authMiddleware,createWorkout);
-router.delete('/deleteWorkout/:id', authMiddleware, deleteWorkout)
+router.post('/workouts', authMiddleware,createWorkout);
+router.delete('/workouts/:id', authMiddleware, deleteWorkout)
 router.get('/stats',authMiddleware, getStats);
 router.post('/ai/generate-plan', authMiddleware, GeneratePlan);
 export default router;

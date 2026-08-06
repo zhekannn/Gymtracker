@@ -104,7 +104,7 @@ export default function CreatePlan({ onPlanChange }: planProp) {
         userId: id
       };
 
-      const response = await fetch('/api/addplan', {
+      const response = await fetch('/api/plans', {
         method: 'POST',
         headers: {
           'Content-type': 'application/json',
@@ -152,56 +152,60 @@ export default function CreatePlan({ onPlanChange }: planProp) {
 
     {/* Exercise Select */}
     <div className="flex flex-col gap-2">
-      <label className="text-sm font-semibold text-slate-200">Exercise</label>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="w-full justify-between dark bg-slate-900/80 border-border/40 text-sm h-11 px-3.5 text-slate-200 hover:bg-slate-800 hover:text-white"
-          >
-            <span className="truncate">
-              {value
-                ? exercises.find((ex) => ex.name === value)?.name
-                : "Select an exercise..."}
-            </span>
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-slate-900 border-border/40 dark">
-          <Command>
-            <CommandInput placeholder="Search exercise..." className="h-10 text-sm" />
-            <CommandList>
-              <CommandEmpty className="py-3 text-center text-sm text-slate-400">
-                No exercise found.
-              </CommandEmpty>
-              <CommandGroup>
-                {exercises.map((ex) => (
-                  <CommandItem
-                    key={ex.id}
-                    value={ex.name}
-                    onSelect={(currentValue) => {
-                      setValue(currentValue === value ? "" : currentValue);
-                      setOpen(false);
-                    }}
-                    className="text-sm py-2.5 text-slate-200 hover:bg-slate-800 cursor-pointer"
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4 text-primary",
-                        value === ex.name ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    {ex.name}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
-    </div>
+  <label className="text-sm font-semibold text-slate-200">Exercise</label>
+  <Popover open={open} onOpenChange={setOpen}>
+    <PopoverTrigger asChild>
+      <Button
+        variant="outline"
+        role="combobox"
+        aria-expanded={open}
+        className="w-full justify-between dark bg-slate-900/80 border-border/40 text-sm h-11 px-3.5 text-slate-200 hover:bg-slate-800 hover:text-white"
+      >
+        <span className="truncate">
+          {value
+            ? exercises.find((ex) => ex.name === value)?.name
+            : "Select an exercise..."}
+        </span>
+        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+      </Button>
+    </PopoverTrigger>
+    <PopoverContent 
+      align="start" 
+      sideOffset={4}
+      className="w-[--radix-popover-trigger-width] p-0 bg-slate-900 border-border/40 dark"
+    >
+      <Command>
+        <CommandInput placeholder="Search exercise..." className="h-10 text-sm" />
+        <CommandList className="max-h-[220px] min-h-[100px] overflow-y-auto">
+          <CommandEmpty className="py-6 text-center text-sm text-slate-400">
+            No exercise found.
+          </CommandEmpty>
+          <CommandGroup>
+            {exercises.map((ex) => (
+              <CommandItem
+                key={ex.id}
+                value={ex.name} 
+                onSelect={(currentValue) => {
+                  setValue(currentValue === value.toLowerCase() ? "" : ex.name);
+                  setOpen(false);
+                }}
+                className="text-sm py-2.5 text-slate-200 hover:bg-slate-800 cursor-pointer"
+              >
+                <Check
+                  className={cn(
+                    "mr-2 h-4 w-4 text-primary",
+                    value === ex.name ? "opacity-100" : "opacity-0"
+                  )}
+                />
+                {ex.name}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </CommandList>
+      </Command>
+    </PopoverContent>
+  </Popover>
+</div>
 
     {/* Weight / Reps / Sets */}
     <div className="grid grid-cols-3 gap-3">

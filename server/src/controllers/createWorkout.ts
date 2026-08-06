@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { WorkoutService } from "../services/workoutService.js";
 import { IWorkout } from "../../../shared/types.js";
+import { redis } from "../config/redis.js";
 const workoutService = new WorkoutService();
 
 export async function createWorkout(req: Request, res: Response) {
@@ -15,7 +16,7 @@ export async function createWorkout(req: Request, res: Response) {
             return res.status(400).json({ message: "Invalid workout data provided" });
         }
         const newWorkout = await workoutService.create(workoutData, userId);
-        
+        await redis.del(`stats:user:${userId}`);
         return res.status(201).json({ message: "Workout saved!", workout: newWorkout });
     } catch (error) {
         console.log(error);

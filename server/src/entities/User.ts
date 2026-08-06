@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany} from "typeorm";
 import {IUser} from "../../../shared/types.js"
-import { TrainingPlans } from "./TrainingPlans.js";
+import type { TrainingPlans } from "./TrainingPlans.js";
 import { Workout } from "./Workout.js";
 @Entity({ name: "users" })
 export class User implements IUser{
@@ -18,7 +18,7 @@ export class User implements IUser{
     password: string;
     @Column({ type: "date", nullable: true })
     birthDate?: Date;
-    @OneToMany(()=>TrainingPlans, (training)=> training.user)
+    @OneToMany("TrainingPlans", (plan:TrainingPlans)=> plan.user)
     plans:TrainingPlans[];
     @OneToMany(()=>Workout, (workout)=> workout.user)
     workouts:Workout[];

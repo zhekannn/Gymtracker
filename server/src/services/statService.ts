@@ -3,16 +3,10 @@ import { IUserStats, IExerciseStats, IStatPoint, IExercisesList } from "../../..
 import { AppDataSource } from "../data-source.js";
 import { Workout } from "../entities/Workout.js";
 import { Exercise } from "../entities/Exercise.js";
-
+import { redis } from "../config/redis.js";
 export class StatService {
   private workoutRepo = AppDataSource.getRepository(Workout);
   private exRepo = AppDataSource.getRepository(Exercise);
-
-  /**
-   * Helper для нормализации даты в красивую локальную строку
-   * @param date - объект Date или строка
-   * @param includeTime - включать ли время (ЧЧ:ММ)
-   */
   private formatDate(date: Date | string, includeTime: boolean = false): string {
     const d = new Date(date);
     if (isNaN(d.getTime())) return "";
@@ -27,7 +21,46 @@ export class StatService {
   
     return `${datePart} ${timePart}`;
   }
-
+  public async getUserStatsCached(userId: number): Promise<IUserStats> {
+    const cacheKey = `stats:user:${userId}`;
+  
+    try {
+      const cachedData = await redis.get(cacheKey);
+      if (cachedData) {
+        return JSON.parse(cachedData);
+      }
+    } catch (err) {
+      console.warn("Redis is down, fetching directly from DB...");
+    }
+    const stats = await this.getUserStats(userId);
+  
+    try {
+      await redis.set(cacheKey, JSON.stringify(stats), 'EX', 900);
+    } catch (err) {
+    }
+  
+    return stats;
+  }
+  public async getExerciseStatsCached(userId:number):Promise<IExerciseStats[]>{
+    const cacheKey = `stats:exercises:${userId}`;
+  
+    try {
+      const cachedData = await redis.get(cacheKey);
+      if (cachedData) {
+        return JSON.parse(cachedData);
+      }
+    } catch (err) {
+      console.warn("Redis is down, fetching directly from DB...");
+    }
+    const stats = await this.getExerciseStats(userId);
+  
+    try {
+      await redis.set(cacheKey, JSON.stringify(stats), 'EX', 900);
+    } catch (err) {
+    }
+  
+    return stats;
+  }
   public async getUserStats(userId: number): Promise<IUserStats> {
     const oneMonthAgo = new Date();
     oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
@@ -47,7 +80,6 @@ export class StatService {
     const bodyWeightMap = new Map<string, number>();
 
     for (const workout of workouts) {
-      // Для общего веса тела и тоннажа за день берем дату БЕЗ времени ("01.08")
       const dayKey = this.formatDate(workout.completedAt, true);
 
       let workoutVolume = workout.exercisesSnapshot.reduce((acc, ex) => {
@@ -59,11 +91,9 @@ export class StatService {
       workoutVolume=workoutVolume/1000;
       totalWeightInMonth += workoutVolume;
 
-      // Накапливаем тоннаж за день
       const currentDayVolume = weightPerDayMap.get(dayKey) || 0;
       weightPerDayMap.set(dayKey, currentDayVolume + workoutVolume);
 
-      // Записываем вес тела за этот день
       if (workout.bodyWeight && workout.bodyWeight > 0) {
         bodyWeightMap.set(dayKey, workout.bodyWeight);
       }
@@ -77,21 +107,22 @@ export class StatService {
       ([date, value]) => ({ date, value })
     );
 
-    const latestBodyWeight = workouts.length > 0 ? workouts[workouts.length - 1]!.bodyWeight || 0 : 0;
+    const latestBodyWeight = workouts.length > 0 ? workouts.reverse().find((val)=>val.bodyWeight)?.bodyWeight || 0 : 0;
     const workoutsInMonth = workouts.length;
     const totalWorkouts = await this.workoutRepo.count({ where: { userId } });
-
+    const weightMonthAgo=workouts.find((val)=>val.bodyWeight)?.bodyWeight || latestBodyWeight;
     return {
       weight: latestBodyWeight,
       workoutsInMonth,
       totalWeightInMonth,
       totalWeightPerWorkout,
       progress,
-      totalWorkouts
+      totalWorkouts,
+      weightMonthAgo
     };
   }
 
-  public async getExerciseStats(userId: number): Promise<IExerciseStats[]> {
+  public async getExerciseStats(userId: number, dateSpan?:Date): Promise<IExerciseStats[]> {
     const workouts = await this.workoutRepo.find({
       where: { userId },
       order: { completedAt: "ASC" },
@@ -100,7 +131,7 @@ export class StatService {
     if (workouts.length === 0) return [];
 
     // Предзагрузка всех упражнений, чтобы исключить await внутри циклов
-    const allExercises = await this.exRepo.find();
+    const allExercises = await this.exRepo.find({take:20});
     const exerciseCache = new Map<number, Exercise>(allExercises.map(e => [e.id, e]));
 
     const statsMap = new Map<number, IExerciseStats>();
