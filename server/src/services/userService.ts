@@ -34,7 +34,7 @@ export class UserService{
             JWT_SECRET, 
             { expiresIn: remember ? '30d' : '24h' }
         );
-        sendMail(user.email);
+        sendMail(user.email, "Welcome!","<p>Welcome to your GymTracker account</p>");
         return {
             token,
             user: {

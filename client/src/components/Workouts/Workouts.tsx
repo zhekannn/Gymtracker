@@ -88,6 +88,20 @@ export default function Workouts() {
 
   async function handleComplete() {
     const cleanWorkout = currentWorkout.filter((el) => el.exerciseId !== 0);
+    const hasInvalidFields = cleanWorkout.some((exercise) => {
+      const reps = Number(exercise.reps);
+      const sets = Number(exercise.sets);
+      const weight = Number(exercise.weight);
+    
+      const isRepsInvalid = !reps || reps < 1 || Number.isNaN(reps);
+      const isSetsInvalid = !sets || sets < 1 || Number.isNaN(sets);
+      const isWeightInvalid = weight < 0 || Number.isNaN(weight);
+    
+      return isRepsInvalid || isSetsInvalid || isWeightInvalid;
+    });
+    if (hasInvalidFields) {
+      return toast.error("Sets and reps must be at least 1, and weight cannot be negative");
+    }
     if (cleanWorkout.length === 0) {
       toast.error("Please add at least one valid exercise.");
       return;
@@ -229,8 +243,10 @@ export default function Workouts() {
                       {allExercises?.map((ex: IExercisesList) => (
                         <CommandItem
                           key={ex.id}
+                          disabled={currentWorkout.find((val)=>val.exerciseId==ex.id) ? true : false}
                           value={ex.name}
                           onSelect={(currentValue) => {
+                            if(currentWorkout.find((val)=>val.exerciseId==ex.id)) return;
                             const selectedExercise = allExercises?.find(
                               (item) => item.name.toLowerCase() === currentValue.toLowerCase()
                             );
@@ -257,6 +273,7 @@ export default function Workouts() {
                             )}
                           />
                           {ex.name}
+                          {currentWorkout.find((val)=>val.exerciseId==ex.id) && <span className="ml-auto text-xs text-slate-500">(Added)</span>}
                         </CommandItem>
                       ))}
                     </CommandGroup>

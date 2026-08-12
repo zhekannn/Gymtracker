@@ -2,14 +2,15 @@ import { Workout } from "../entities/Workout.js";
 import { AppDataSource } from "../data-source.js";
 import { IWorkout } from "../../../shared/types.js";
 import { User } from "../entities/User.js";
+import { DeleteResult } from "typeorm";
 export class WorkoutService{
     private workoutRepo=AppDataSource.getRepository(Workout);
     private userRepo=AppDataSource.getRepository(User);
-    public async getWorkouts(userId:number) {
+    public async getWorkouts(userId:number):Promise<IWorkout[]> {
         const workouts = await this.workoutRepo.find({ where: { userId: userId } });
         return workouts;
         }
-    public async create(workout:IWorkout, userId:number){
+    public async create(workout:IWorkout, userId:number):Promise<IWorkout>{
         const newWorkout=this.workoutRepo.create({...workout, userId:userId,completedAt: new Date()});
         if(workout.bodyWeight && workout.bodyWeight>0){
             await this.userRepo.update(userId, {
@@ -18,7 +19,7 @@ export class WorkoutService{
         }
         return await this.workoutRepo.save(newWorkout);
     }
-    public async delete(workoutId:number, userId:number){
+    public async delete(workoutId:number, userId:number):Promise<DeleteResult>{
         return await this.workoutRepo.delete({userId:userId, id:workoutId});
     }
     public async getWorkoutsByUser(userId: number, page: number = 1, limit: number = 10) {

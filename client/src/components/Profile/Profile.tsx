@@ -25,7 +25,7 @@ export default function Profile(){
         const parsedUser=JSON.parse(stored);
         setUser(parsedUser);
         if(location.state?.loginSuccess && !hasShown.current){
-            toast.success(`Welcome back, ${user?.username || 'athlete'}!`, {
+            toast.success(`Welcome back, ${parsedUser?.username || 'athlete'}!`, {
                 duration: 2500,
               });
               hasShown.current=true;

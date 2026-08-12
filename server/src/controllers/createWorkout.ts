@@ -12,7 +12,18 @@ export async function createWorkout(req: Request, res: Response) {
             return res.status(401).json({ message: "Unauthorized" });
         }
         const workoutData:IWorkout = req.body; 
-        if (!workoutData || !workoutData.exercisesSnapshot) {
+        const hasInvalidFields = workoutData.exercisesSnapshot.some((exercise) => {
+            const reps = Number(exercise.reps);
+            const sets = Number(exercise.sets);
+            const weight = Number(exercise.weight);
+          
+            const isRepsInvalid = !reps || reps < 1 || Number.isNaN(reps);
+            const isSetsInvalid = !sets || sets < 1 || Number.isNaN(sets);
+            const isWeightInvalid = weight < 0 || Number.isNaN(weight);
+          
+            return isRepsInvalid || isSetsInvalid || isWeightInvalid;
+          });
+        if (!workoutData || !workoutData.exercisesSnapshot || hasInvalidFields) {
             return res.status(400).json({ message: "Invalid workout data provided" });
         }
         const newWorkout = await workoutService.create(workoutData, userId);

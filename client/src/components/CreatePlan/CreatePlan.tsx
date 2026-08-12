@@ -31,7 +31,7 @@ export default function CreatePlan({ onPlanChange }: planProp) {
   const [open, setOpen] = useState(false);
   const [exercises, setExercises] = useState<IExercisesList[]>([]);
   const [exerciseList, setExerciseList] = useState<IExercise[]>([]);
-  
+  const [selectedIds, setSelectedIds]=useState<Number[]>([]);
   const [currentEx, setCurrentEx] = useState<IExercise>({
     exerciseId: 0,
     name: '',
@@ -62,7 +62,7 @@ export default function CreatePlan({ onPlanChange }: planProp) {
     if (isAlreadyAdded) return toast.warning("You already have this exercise in your list");
 
     const selectedObj = exercises.find((ex) => ex.name === value);
-
+    if(Number(currentEx.reps)<=0 || Number(currentEx.sets)<=0 || Number(currentEx.weight)<0) return toast.error("Invalid data in exercise fields");
     const newExercise: IExercise = {
       ...currentEx,
       exerciseId: selectedObj ? selectedObj.id : 0,
@@ -71,11 +71,13 @@ export default function CreatePlan({ onPlanChange }: planProp) {
 
     setExerciseList((prev) => [...prev, newExercise]);
     setValue("");
+    setSelectedIds(prev=>[...prev, newExercise.exerciseId]);
     setCurrentEx({ exerciseId: 0, name: '', weight: '' as any, reps: '' as any, sets: '' as any });
   }
 
   function handleRemoveExercise(indexToRemove: number) {
-    setExerciseList((prev) => prev.filter((_, index) => index !== indexToRemove));
+    setExerciseList((prev) => prev.filter((ex, index) => ex.exerciseId !== indexToRemove));
+    setSelectedIds(prev=>prev.filter((val)=>val!=indexToRemove));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -117,6 +119,12 @@ export default function CreatePlan({ onPlanChange }: planProp) {
         const data = await response.json();
         onPlanChange(data.message, data.plan);
         setExerciseList([]);
+        setSelectedIds([]);
+        setCurrentEx({   exerciseId: 0,
+          name: '',
+          weight: '' as any, 
+          reps: '' as any,
+          sets: '' as any});
         setName('');
         toast.success("Plan created successfully!");
       } else {
@@ -181,15 +189,21 @@ export default function CreatePlan({ onPlanChange }: planProp) {
             No exercise found.
           </CommandEmpty>
           <CommandGroup>
-            {exercises.map((ex) => (
-              <CommandItem
+            {exercises.map((ex) => {
+              const isAlreadyAdded = selectedIds.includes(ex.id);
+             return( <CommandItem
                 key={ex.id}
+                disabled={isAlreadyAdded}
                 value={ex.name} 
                 onSelect={(currentValue) => {
+                  if (isAlreadyAdded) return;
                   setValue(currentValue === value.toLowerCase() ? "" : ex.name);
                   setOpen(false);
                 }}
-                className="text-sm py-2.5 text-slate-200 hover:bg-slate-800 cursor-pointer"
+                className={cn(
+                  "text-sm py-2.5 cursor-pointer",
+                  isAlreadyAdded && "opacity-40 cursor-not-allowed"
+                )}
               >
                 <Check
                   className={cn(
@@ -198,8 +212,9 @@ export default function CreatePlan({ onPlanChange }: planProp) {
                   )}
                 />
                 {ex.name}
+                {isAlreadyAdded && <span className="ml-auto text-xs text-slate-500">(Added)</span>}
               </CommandItem>
-            ))}
+)})}
           </CommandGroup>
         </CommandList>
       </Command>
@@ -270,7 +285,7 @@ export default function CreatePlan({ onPlanChange }: planProp) {
                 </span>
                 <button
                   type="button"
-                  onClick={() => handleRemoveExercise(idx)}
+                  onClick={() => handleRemoveExercise(ex.exerciseId)}
                   className="text-slate-500 hover:text-red-400 transition-colors p-1"
                 >
                   <Trash2 size={15} />

@@ -20,6 +20,10 @@ export default function Registration() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if(Number(formData.weight)<=0) {
+      setMessage("Invalid weight");
+      return;
+    }
     try {
       const response = await fetch("/api/users", {
         method: 'POST',

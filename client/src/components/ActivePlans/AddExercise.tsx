@@ -14,6 +14,14 @@ export default function AddExercise({exercises,editExercises,setEdited,setShow}:
     const emptyEx: IExercise = { name: "", exerciseId: -1, sets: "0", reps: "0", weight: "0" };
     const [exse, setExse] = useState<IExercise>(emptyEx);
     const addExerciseToPlan = () => {
+      if(Number(exse.reps)<=0 || Number(exse.sets)<=0 || Number(exse.weight)<0){
+        toast.error("Exercise fields cannot have any zeros");
+        return;
+      }
+      if(editExercises.find(val=>val.exerciseId==exse.exerciseId)) {
+        toast.info("You already have this excercise");
+        return;
+      }
         if (!exse.name) {
             toast.error("Please select an exercise first");
             return;
