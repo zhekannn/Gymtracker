@@ -4,9 +4,8 @@ import { IUser } from "../../../../shared/types";
 import StatisticSection from "../StatisticSection/StatisticSection";
 import { useEffect,useState,useRef } from "react";
 import avatar from '../../assets/images/avatar.jpg';
-import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
-import { User, Ruler, Scale, Edit2,Calendar} from "lucide-react";
+import { User, Ruler, Scale,Calendar} from "lucide-react";
 import { IWorkout } from "../../../../shared/types";
 import WorkoutSection from "../WorkoutSection/WorkoutSection";
 import { getAge } from "../../getAge";
@@ -16,6 +15,11 @@ export default function Profile(){
     const navigate=useNavigate();
     const location=useLocation();
     const hasShown=useRef(false);
+    const [statsTrigger, setStatsTrigger] = useState(0);
+
+  const refreshStats = () => {
+    setStatsTrigger(prev => prev + 1);
+  };
     useEffect(()=>{
         const stored=localStorage.getItem('user');
         if(!stored){
@@ -75,22 +79,15 @@ export default function Profile(){
             {" "}and start progressing!
           </p>
         )}
-        {/* <Button 
-          variant="outline" 
-          className="w-full border-primary/50 text-white hover:bg-primary hover:text-black hover:cursor-pointer transition-colors gap-2"
-        >
-          <Edit2 size={16} />
-          Edit profile
-        </Button> */}
       </div>
 
 
       <div className=" md:w-[33.3%] relative flex flex-col items-center bg-[#0F213B] mx-4 p-6 rounded-2xl border-2 border-primary/30 shadow-xl transition-all hover:border-primary/60">
-        <StatisticSection></StatisticSection>
+        <StatisticSection statsTrigger={statsTrigger}></StatisticSection>
       </div>
 
       <div className=" md:w-[33.3%] relative flex flex-col items-center bg-[#0F213B] mx-4 p-6 rounded-2xl border-2 border-primary/30 shadow-xl transition-all hover:border-primary/60">
-        <WorkoutSection></WorkoutSection>
+        <WorkoutSection onWorkoutDeleted={refreshStats}></WorkoutSection>
       </div>
       </div>
     );

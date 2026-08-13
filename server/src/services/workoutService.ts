@@ -3,6 +3,7 @@ import { AppDataSource } from "../data-source.js";
 import { IWorkout } from "../../../shared/types.js";
 import { User } from "../entities/User.js";
 import { DeleteResult } from "typeorm";
+import { redis } from "../config/redis.js";
 export class WorkoutService{
     private workoutRepo=AppDataSource.getRepository(Workout);
     private userRepo=AppDataSource.getRepository(User);
@@ -17,10 +18,21 @@ export class WorkoutService{
                 weight: workout.bodyWeight,
               });
         }
+        const keys = await redis.keys(`stats:*:${userId}*`);
+            if (keys.length > 0) {
+                await redis.del(keys);
+              }
         return await this.workoutRepo.save(newWorkout);
     }
     public async delete(workoutId:number, userId:number):Promise<DeleteResult>{
-        return await this.workoutRepo.delete({userId:userId, id:workoutId});
+        const result=await this.workoutRepo.delete({userId:userId, id:workoutId});
+        const keys = await redis.keys(`stats:*:${userId}*`);
+        if(result.affected && result.affected>0){
+            if (keys.length > 0) {
+                await redis.del(keys);
+              }
+        }
+        return result;
     }
     public async getWorkoutsByUser(userId: number, page: number = 1, limit: number = 10) {
         const skip = (page - 1) * limit;

@@ -16,7 +16,7 @@ import {
 import ExerciseSelect from "../SelectExercise/SelectExercise";
 import { cn } from "@/lib/utils";
 type TabType = "general" | "exercises";
-export default function StatisticSection() {
+export default function StatisticSection({ statsTrigger }: { statsTrigger: number }) {
     const [exStats, setExStats] = useState<IExerciseStats[] | null>(null);
     const [userStats,setUserStats]=useState<IUserStats | null>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -55,7 +55,7 @@ export default function StatisticSection() {
       }
   
       getStats();
-    }, [navigate]);
+    }, [navigate, statsTrigger]);
   
     return (
       <div className="w-full bg-[#0F172A]/60 border border-border/50 rounded-2xl p-6 shadow-xl">

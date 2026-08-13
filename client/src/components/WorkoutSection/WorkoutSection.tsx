@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import AlertDialogDelete from "../ActivePlans/AlertDialogDelete";
 
-export default function WorkoutSection() {
+export default function WorkoutSection({onWorkoutDeleted}:{onWorkoutDeleted():void}) {
   const [trainings, setTrainings] = useState<IWorkout[]>([]);
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(false);
@@ -41,9 +41,15 @@ export default function WorkoutSection() {
     fetchTrainings(1);
   }, []);
   function handleLoadMore() {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    fetchTrainings(nextPage);
+    if(trainings.length==0){
+      setPage(1);
+      fetchTrainings(1);
+    }
+    else{
+      const newPage=page+1;
+      setPage(newPage);
+      fetchTrainings(newPage);
+    } 
   }
 
   async function deleteWorkout(id: number) {
@@ -58,8 +64,15 @@ export default function WorkoutSection() {
       });
       const data = await response.json();
       if (response.ok) {
+        // const workouts=JSON.parse(JSON.stringify(trainings));
         setTrainings((prev) => prev.filter((value) => Number(value.id) !== Number(id)));
+        // const currentWorkouts=workouts.filter((val:IWorkout)=>Number(val.id)!==Number(id));
         toast.success(data.message || "Success!");
+        // console.log(currentWorkouts.length);
+        // if(currentWorkouts.length==0){
+        //   handleLoadMore();
+        // } 
+        onWorkoutDeleted();
       } else {
         toast.error(data.message || "Error");
       }
@@ -67,7 +80,12 @@ export default function WorkoutSection() {
       toast.error("Server error");
     }
   }
-
+  useEffect(() => {
+    // Если массив тренировок опустел, но на сервере ещё есть данные (hasMore === true)
+    if (trainings.length === 0 && hasMore && !loading) {
+      handleLoadMore();
+    }
+  }, [trainings.length, hasMore, loading]);
   return (
     <>
       <div className="flex items-center gap-2 mb-6">
