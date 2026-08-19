@@ -10,4 +10,6 @@ export class Exercise implements IExercisesList{
     muscleGroup:string;
     @Column({nullable:true, type:'text'})
     description:string;
+    @Column({ type: 'varchar', nullable: true })
+    imageUrl?: string | null;
 }

@@ -1,11 +1,8 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { IUser } from '../../../../shared/types'
 import { useNavigate } from 'react-router-dom';
-import { Alert, AlertTitle } from "@/components/ui/alert"
-import { AlertCircleIcon } from "lucide-react"
-
+import { toast } from "sonner";
 export default function Registration() {
-  const [message, setMessage] = useState('');
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -15,13 +12,12 @@ export default function Registration() {
     birthDate: '',
     rememberMe: false
   });
-
   const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if(Number(formData.weight)<=0) {
-      setMessage("Invalid weight");
+      toast.error("Invalid weight");
       return;
     }
     try {
@@ -41,16 +37,15 @@ export default function Registration() {
         });
       } else {
         const errorData = await response.json();
-        setMessage(errorData.message || "Registration error");
+        toast.error(errorData.message);
       }
     } catch (err) {
-      setMessage(`Request error: ${err}`);
+      toast.error("Registration error");
     }
   }
-
   return (
     <>
-      <div className="flex flex-col items-center justify-center min-h-[80vh] py-10 px-4">
+      <div className="flex flex-col items-center justify-center min-h-[80vh] py-8 px-4">
         <h3 className="text-3xl font-bold mb-8 text-white">Registration</h3>
         <form 
           onSubmit={handleSubmit} 
@@ -146,14 +141,14 @@ export default function Registration() {
           </p>
         </form>
 
-        {message && (
+        {/* {message && (
           <Alert variant="destructive" className="max-w-md border-amber-200 bg-red-200 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-50 mt-4">
             <AlertCircleIcon />
             <AlertTitle className="text-red-600">
               {message}
             </AlertTitle>
           </Alert>
-        )}
+        )} */}
       </div>
     </>
   )

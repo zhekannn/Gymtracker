@@ -35,6 +35,7 @@ export interface IExercisesList{
     name:string;
     muscleGroup:string;
     description:string;
+    imageUrl?:string | null;
 }
 export interface IExerciseStats{
     exercise:IExercisesList;

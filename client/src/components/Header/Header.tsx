@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/sheet";
 export default function Header() {
     const [isAuth, setIsAuth] = useState(false);
+    const [open, setOpen] =useState(false);
     const location=useLocation();
     const navigate=useNavigate();
   useEffect(() => {
@@ -75,7 +76,7 @@ export default function Header() {
           Gym <span className="text-[#22C55E]">Tracker</span>
         </h2>
       </div>
-      {isAuth &&
+      {isAuth ?(
       <nav className="hidden md:flex items-center gap-6">
         <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -102,10 +103,11 @@ export default function Header() {
         <Link to="/profile" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Profile</Link>
         <Link to="/plans" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Plans</Link>
         <Link to="/workouts" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Workouts</Link>
-      </nav>}
-      {isAuth &&
+        <Link to="/exercises" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Exercises</Link>
+      </nav>) : <nav className="hidden md:flex items-end"> <Link to="/exercises" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Exercises</Link></nav>}
+      {isAuth ?(
     <div className="md:hidden">
-      <Sheet>
+      <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="text-white">
             <Menu />
@@ -114,9 +116,10 @@ export default function Header() {
         <SheetContent side="right" className="bg-[#020617] border-slate-800 text-white">
           <SheetTitle className="text-white">Menu</SheetTitle>
           <nav className="flex flex-col gap-4 mt-8">
-          <Link to="/profile" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Profile</Link>
-          <Link to="/plans" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Plans</Link>
-          <Link to="/workouts" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Workouts</Link>
+          <Link to="/profile" onClick={()=>setOpen(false)} className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Profile</Link>
+          <Link to="/plans" onClick={()=>setOpen(false)} className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Plans</Link>
+          <Link to="/workouts" onClick={()=>setOpen(false)} className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Workouts</Link>
+          <Link to="/exercises" onClick={()=>setOpen(false)} className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Exercises</Link>
             <hr className="border-slate-800" />
             <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -139,7 +142,7 @@ export default function Header() {
         </SheetContent>
       </Sheet>
     </div>
-}
+) : <div className='md:hidden'>  <Link to="/exercises" className="text-sm font-medium text-gray-400 hover:text-[#22C55E] transition-colors">Exercises</Link></div>}
   </header>
 )
 }

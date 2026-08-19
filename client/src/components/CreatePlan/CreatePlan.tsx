@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Plus, Check, ChevronsUpDown, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
+import {getExes} from "../GetExercises";
 interface planProp {
   onPlanChange: (message: string, plan?: IPlan) => void;
 }
@@ -39,22 +39,23 @@ export default function CreatePlan({ onPlanChange }: planProp) {
     reps: '' as any,
     sets: '' as any
   });
-
-  async function getExes() {
-    try {
-      const response = await fetch('/api/exercises');
-      if (response.ok) {
-        const data: IExercisesList[] = await response.json();
-        setExercises(data);
-      }
-    } catch (err) {
-      console.error("Failed to load exercises", err);
+  async function fetchExercises() {
+    try{
+      const data=await getExes();
+      setExercises(data);
+      console.log(data);
+    }
+    catch(err){
+        console.log(err);
+        toast.error("Failed to load exercises");
     }
   }
-
   useEffect(() => {
-    getExes();
-  }, []);
+    if(open){ 
+    if(!exercises || exercises.length==0)
+      fetchExercises();
+  }
+  }, [open]);
   function handleAddExercise() {
     if (!value) return toast.info("Please select an exercise");
 

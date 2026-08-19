@@ -6,12 +6,14 @@ import Profile from "./components/Profile/Profile";
 import Workouts from "./components/Workouts/Workouts";
 import Plans from "./components/Plans/Plans";
 import { ProtectedRoute, PublicRoute } from "./ProtectedRoute";
+import Exercises from "./components/Exercises/Exercises";
 export default function Router() {
   return (
     <>
       <Header></Header>
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/exercises" element={<Exercises />} />
       <Route element={<PublicRoute />}>
         <Route path="/login" element={<Login />} />
         <Route path="/sign" element={<Registration />} />

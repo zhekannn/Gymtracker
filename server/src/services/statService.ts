@@ -1,4 +1,4 @@
-import { MoreThanOrEqual } from "typeorm";
+import { MoreThanOrEqual,LessThanOrEqual, Not, IsNull } from "typeorm";
 import { IUserStats, IExerciseStats, IStatPoint, IExercisesList } from "../../../shared/types.js";
 import { AppDataSource } from "../data-source.js";
 import { Workout } from "../entities/Workout.js";
@@ -15,7 +15,6 @@ export class StatService {
       return d.toLocaleDateString("ru-RU", { day: "2-digit", month: "numeric" });
     }
   
-    // Используем toLocaleString для корректного форматирования с временем
     const datePart = d.toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit", year:"2-digit"});
     const timePart = d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
   
@@ -107,18 +106,40 @@ export class StatService {
       ([date, value]) => ({ date, value })
     );
 
-    const latestBodyWeight = workouts.length > 0 ? workouts.reverse().find((val)=>val.bodyWeight)?.bodyWeight || 0 : 0;
+    const latestBodyWeight = workouts.length > 0 ? workouts[workouts.length - 1]?.bodyWeight || 0 : 0;
+
     const workoutsInMonth = workouts.length;
     const totalWorkouts = await this.workoutRepo.count({ where: { userId } });
-    const weightMonthAgo=workouts.find((val)=>val.bodyWeight)?.bodyWeight || latestBodyWeight;
+    
+    const oneMonthAgoDate = new Date();
+    oneMonthAgoDate.setDate(oneMonthAgoDate.getDate() - 30);
+    let monthAgoWorkout = await this.workoutRepo.findOne({
+      where: {
+        userId,
+        completedAt: LessThanOrEqual(oneMonthAgoDate),
+        bodyWeight: Not(IsNull()),
+      },
+      order: { completedAt: 'DESC' },
+    });
+    if (!monthAgoWorkout) {
+      monthAgoWorkout = await this.workoutRepo.findOne({
+        where: {
+          userId,
+          bodyWeight: Not(IsNull()),
+        },
+        order: { completedAt: 'ASC' },
+      });
+    }
+    const weightMonthAgo = monthAgoWorkout?.bodyWeight || latestBodyWeight;
+    
     return {
-      weight: latestBodyWeight,
+      weight: Number(latestBodyWeight),
       workoutsInMonth,
       totalWeightInMonth,
       totalWeightPerWorkout,
       progress,
       totalWorkouts,
-      weightMonthAgo
+      weightMonthAgo: Number(weightMonthAgo)
     };
   }
 
