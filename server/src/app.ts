@@ -1,9 +1,10 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from "cors";
 import userRoutes from './routes/userRoutes.js';
+import { FRONTEND_URL } from './config/jwt.js';
 const app = express();
 app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:5173",
+  origin: FRONTEND_URL || "http://localhost/",
   credentials: true,
 }));
 app.use(express.json());

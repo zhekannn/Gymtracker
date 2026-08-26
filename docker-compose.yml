@@ -15,7 +15,7 @@ services:
     container_name: app_postgres
     environment:
       POSTGRES_USER: postgres
-      DB_PASSWORD: ${DB_PASSWORD:-1605Zhekan}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-1605Zhekan}
       POSTGRES_DB: gymtracker
     ports:
       - "5432:5432"
@@ -31,7 +31,14 @@ services:
     container_name: app_backend
     ports:
       - "5000:5000"
+    env_file:
+      - .env
     environment:
+      SMTP_HOST: sandbox.smtp.mailtrap.io
+      SMTP_PORT: 2525
+      SMTP_USER: ${EMAIL_USER}
+      SMTP_PASS: ${EMAIL_PASS}
+      FRONTEND_URL: http://localhost
       PORT: ${PORT:-5000}
       DB_HOST: postgres
       DB_PORT: ${DB_PORT:-5432}
