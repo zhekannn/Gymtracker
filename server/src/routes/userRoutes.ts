@@ -12,6 +12,8 @@ import { createWorkout } from '../controllers/createWorkout.js';
 import { deleteWorkout } from '../controllers/deleteWorkout.js';
 import { getStats } from '../controllers/getStats.js';
 import { GeneratePlan } from '../controllers/generatePlan.js';
+import { forgotPassword } from '../controllers/forgotPassword.js';
+import { resetPassword } from '../controllers/resetPassword.js';
 const router = Router();
 router.post('/login', login);
 router.post('/users', register);
@@ -28,4 +30,6 @@ router.post('/workouts', authMiddleware,createWorkout);
 router.delete('/workouts/:id', authMiddleware, deleteWorkout)
 router.get('/stats',authMiddleware, getStats);
 router.post('/ai/generate-plan', authMiddleware, GeneratePlan);
+router.post('/auth/forgot-password', forgotPassword);
+router.post('/auth/reset-password', resetPassword);
 export default router;

@@ -88,7 +88,7 @@ export default function Login() {
             Log in
           </button>
           <div className="text-center space-y-2 text-sm">
-            <p className="justify-center"><Link to="#" className="text-[#22C55E] hover:text-[#4ADE80]" >Forgot password?</Link></p>
+            <p className="justify-center"><Link to="/forgot-password" className="text-[#22C55E] hover:text-[#4ADE80]" >Forgot password?</Link></p>
             <p className="justify-center">
               New here? <strong className="ml-1"><Link to="/sign" className="text-[#22C55E] hover:text-[#4ADE80]" >Sign up</Link></strong>
             </p>

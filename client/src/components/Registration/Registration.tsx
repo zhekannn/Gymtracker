@@ -20,6 +20,10 @@ export default function Registration() {
       toast.error("Invalid weight");
       return;
     }
+    if(formData.password.length<6){
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
     try {
       const response = await fetch("/api/users", {
         method: 'POST',
@@ -140,15 +144,6 @@ export default function Registration() {
             Already have an account? <a href="/" className="text-[#22C55E] font-bold hover:underline ml-1">Log in</a>
           </p>
         </form>
-
-        {/* {message && (
-          <Alert variant="destructive" className="max-w-md border-amber-200 bg-red-200 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-50 mt-4">
-            <AlertCircleIcon />
-            <AlertTitle className="text-red-600">
-              {message}
-            </AlertTitle>
-          </Alert>
-        )} */}
       </div>
     </>
   )

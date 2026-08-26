@@ -23,6 +23,12 @@ export class UserService{
         const newUser=this.userRepo.create({...user, password:hashedPassword});
         return await this.userRepo.save(newUser);
     }
+    public async updatePassword(userId:number, newPassword:string): Promise<User | null>{
+        const user=await this.userRepo.findOneBy({id:userId});
+        if(!user) return null;
+        user.password=newPassword;
+        return await this.userRepo.save(user); 
+    }
     public async login(username: string, password: string, remember: boolean): Promise<{token:string, user:IUser} | null> {
         const user = await this.userRepo.findOne({where:{username}, relations:["workouts"]});
 

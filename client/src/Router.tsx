@@ -7,13 +7,18 @@ import Workouts from "./components/Workouts/Workouts";
 import Plans from "./components/Plans/Plans";
 import { ProtectedRoute, PublicRoute } from "./ProtectedRoute";
 import Exercises from "./components/Exercises/Exercises";
+import ForgotPassword from "./components/ForgotPassword/ForgotPassword";
+import ResetPassword from "./components/ResetPassword/ResetPassword";
 export default function Router() {
   return (
     <>
       <Header></Header>
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
+
       <Route path="/exercises" element={<Exercises />} />
+      <Route path="/forgot-password" element={<ForgotPassword/>}></Route>
+      <Route path="/reset-password" element={<ResetPassword/>}></Route>
       <Route element={<PublicRoute />}>
         <Route path="/login" element={<Login />} />
         <Route path="/sign" element={<Registration />} />
