@@ -1,7 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from "cors";
 import userRoutes from './routes/userRoutes.js';
-import { FRONTEND_URL } from './config/jwt.js';
 const app = express();
 const allowedOrigins = [
   process.env.CLIENT_URL,
