@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { UserService } from "../services/userService.js";
 import { sendMail } from "../services/sendMail.js";
 import { redis } from "../config/redis.js";
-import { FRONTEND_URL } from "../config/jwt.js";
+import { CLIENT_URL } from "../config/jwt.js";
 export async function forgotPassword(req: Request, res: Response) {
   try {
     const { email } = req.body;
@@ -17,7 +17,7 @@ export async function forgotPassword(req: Request, res: Response) {
     if (user) {
       const resetToken = crypto.randomBytes(32).toString("hex");
       await redis.set(`reset:${resetToken}`, user.id, "EX", 900);
-      const frontendUrl = FRONTEND_URL || "http://localhost";
+      const frontendUrl = CLIENT_URL || "http://localhost";
       const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
       const htmlContent = `
         <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; rounded: 8px;">
