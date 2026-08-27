@@ -66,7 +66,7 @@ export default function DialogEdit({ array, onUpdate }: planProps) {
             const user=localStorage.getItem('user');
             if(!user) navigate('/login'); 
             const userId=JSON.parse(user!).id;
-            const response = await fetch(`/api/plans/${array.id}`, {
+            const response = await fetch(`${API_URL}/api/plans/${array.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`

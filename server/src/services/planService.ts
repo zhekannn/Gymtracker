@@ -5,6 +5,7 @@ import { IPlan } from "../../../shared/types.js";
 import { DeleteResult } from "typeorm";
 import { GoogleGenAI } from "@google/genai";
 import { Exercise } from "../entities/Exercise.js";
+import { GEMINI_API_KEY } from "../config/jwt.js";
 export class PlanService{
     private planRepo=AppDataSource.getRepository(TrainingPlans);
     private exRepo=AppDataSource.getRepository(Exercise);
@@ -41,7 +42,7 @@ export class PlanService{
           const exercisesListString = availableExercises
             .map((ex) => `ID: ${ex.id}, Name: "${ex.name}"${ex.muscleGroup ? `, Category: ${ex.muscleGroup}` : ""}`)
             .join("\n");
-          const ai = new GoogleGenAI({});
+          const ai = new GoogleGenAI({apiKey:GEMINI_API_KEY || ""});
       
           const prompt = `
             You are a professional fitness coach. Create a workout plan based on the user request.
