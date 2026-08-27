@@ -1,7 +1,6 @@
 import "reflect-metadata";
 import dotenv from 'dotenv';
 dotenv.config();
-
 import app from './app.js';
 import { PORT } from './config/jwt.js';
 import { AppDataSource } from './data-source.js';

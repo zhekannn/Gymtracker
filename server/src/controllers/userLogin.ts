@@ -6,7 +6,7 @@ export async function login(req:Request, res:Response){
         const service=new UserService();
         const result = await service.login(username, password, remember);
         if (!result) {
-            return res.status(401).json({ message: "Неверное имя пользователя или пароль" });
+            return res.status(401).json({ message: "Invalid username or password" });
         }
         return res.status(200).json({
             token: result.token,
