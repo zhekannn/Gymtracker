@@ -3,9 +3,21 @@ import cors from "cors";
 import userRoutes from './routes/userRoutes.js';
 import { FRONTEND_URL } from './config/jwt.js';
 const app = express();
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://localhost:3000'
+].filter(Boolean) as string[];
+
 app.use(cors({
-  origin: FRONTEND_URL || "http://localhost/",
-  credentials: true,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Blocked by CORS'));
+    }
+  },
+  credentials: true, 
 }));
 app.use(express.json());
 app.use('/api', userRoutes);
