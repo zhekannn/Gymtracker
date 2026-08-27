@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { IUser } from '../../../../shared/types'
 import { useNavigate,Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { API_URL } from '../../api/config';
 export default function Login() {
   const [form, setForm] = useState({
     username: '',
@@ -12,7 +13,7 @@ export default function Login() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch(`${API_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-type': 'application/json' },
         body: JSON.stringify(form),

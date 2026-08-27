@@ -16,6 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { API_URL } from '../../api/config';
 import { 
   Sheet, 
   SheetContent, 
@@ -35,7 +36,7 @@ export default function Header() {
         return;
       }
       try {
-        const response = await fetch('/api/me', {
+        const response = await fetch(`${API_URL}/api/me`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

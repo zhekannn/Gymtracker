@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { API_URL } from '../../api/config';
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Edit } from "lucide-react"
@@ -44,7 +45,7 @@ export default function DialogEdit({ array, onUpdate }: planProps) {
     useEffect(() => {
         async function getExes() {
             try {
-                const response = await fetch("/api/exercises");
+                const response = await fetch(`${API_URL}/api/exercises`);
                 const data = await response.json();
                 setExersises(data || []);
             } catch (e) {

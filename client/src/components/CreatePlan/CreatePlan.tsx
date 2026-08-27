@@ -14,6 +14,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { API_URL } from '../../api/config';
 import {
   Popover,
   PopoverContent,
@@ -107,7 +108,7 @@ export default function CreatePlan({ onPlanChange }: planProp) {
         userId: id
       };
 
-      const response = await fetch('/api/plans', {
+      const response = await fetch(`${API_URL}/api/plans`, {
         method: 'POST',
         headers: {
           'Content-type': 'application/json',

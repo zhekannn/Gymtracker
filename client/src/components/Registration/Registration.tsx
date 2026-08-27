@@ -2,6 +2,7 @@ import { useRef, useState } from "react"
 import { IUser } from '../../../../shared/types'
 import { useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
+import { API_URL } from '../../api/config';
 export default function Registration() {
   const [formData, setFormData] = useState({
     username: '',
@@ -25,7 +26,7 @@ export default function Registration() {
       return;
     }
     try {
-      const response = await fetch("/api/users", {
+      const response = await fetch(`${API_URL}/api/users`, {
         method: 'POST',
         headers: { 'Content-type': 'application/json' },
         body: JSON.stringify(formData),

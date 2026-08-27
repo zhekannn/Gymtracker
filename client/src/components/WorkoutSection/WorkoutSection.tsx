@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import AlertDialogDelete from "../ActivePlans/AlertDialogDelete";
-
+import { API_URL } from '../../api/config';
 export default function WorkoutSection({onWorkoutDeleted}:{onWorkoutDeleted():void}) {
   const [trainings, setTrainings] = useState<IWorkout[]>([]);
   const [page, setPage] = useState<number>(1);
@@ -18,7 +18,7 @@ export default function WorkoutSection({onWorkoutDeleted}:{onWorkoutDeleted():vo
 
     setLoading(true);
     try {
-      const response = await fetch(`/api/workouts?page=${pageNum}&limit=${LIMIT}`, {
+      const response = await fetch(`${API_URL}/api/workouts?page=${pageNum}&limit=${LIMIT}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -58,7 +58,7 @@ export default function WorkoutSection({onWorkoutDeleted}:{onWorkoutDeleted():vo
       return;
     }
     try {
-      const response = await fetch(`/api/workouts/${id}`, {
+      const response = await fetch(`${API_URL}/api/workouts/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });

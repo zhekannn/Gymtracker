@@ -16,6 +16,7 @@ import { ChevronsUpDown, Check } from "lucide-react"
 import { Command, CommandInput, CommandEmpty, CommandGroup, CommandItem } from "../ui/command"
 import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover"
 import ExerciseRow from "../ActivePlans/ExerciseRow"
+import { API_URL } from '../../api/config';
 import { cn } from "@/lib/utils"
 export default function Workouts() {
   const [plans, setPlans] = useState<IPlan[] | null>(null);
@@ -66,7 +67,7 @@ export default function Workouts() {
     if (allExercises) return;
 
     try {
-      const response = await fetch("/api/exercises");
+      const response = await fetch(`${API_URL}/api/exercises`);
       if (response.ok) {
         const data = await response.json();
         setAllExercises(data);
@@ -126,7 +127,7 @@ export default function Workouts() {
     };
 
     try {
-      const response = await fetch(`/api/workouts`, {
+      const response = await fetch(`${API_URL}/api/workouts`, {
         body: JSON.stringify(newWorkout),
         method: "POST",
         headers: {

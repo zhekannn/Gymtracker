@@ -14,6 +14,7 @@ import {
   CartesianGrid 
 } from 'recharts';
 import ExerciseSelect from "../SelectExercise/SelectExercise";
+import { API_URL } from '../../api/config';
 import { cn } from "@/lib/utils";
 type TabType = "general" | "exercises";
 export default function StatisticSection({ statsTrigger }: { statsTrigger: number }) {
@@ -34,7 +35,7 @@ export default function StatisticSection({ statsTrigger }: { statsTrigger: numbe
             return;
           }
   
-          const response = await fetch("/api/stats", {
+          const response = await fetch(`${API_URL}/api/stats`, {
             headers: { Authorization: `Bearer ${token}` },
           });
   

@@ -11,6 +11,7 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { API_URL } from '../../api/config';
 import { IGeneratePlanInfo, IPlan, IUser } from "../../../../shared/types";
 import { getAge } from "../../getAge";
 
@@ -37,7 +38,7 @@ export default function GenerateAiPlanDialog({ onPlanGenerated }: GenerateAiPlan
       const weight=userData.weight;
       const height=userData.height;
       const age=getAge(userData.birthDate);
-      const response = await fetch("/api/ai/generate-plan", {
+      const response = await fetch(`${API_URL}/api/ai/generate-plan`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
