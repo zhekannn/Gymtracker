@@ -8,6 +8,7 @@ export async function exSelect(req:Request,res:Response) {
     try {
         const cachedData = await redis.get(cacheKey);
         if (cachedData) {
+          console.log('--- RETURNED FROM REDIS ---', cachedData);
           return res.status(200).json(JSON.parse(cachedData));
         }
       } catch (err) {
@@ -19,6 +20,7 @@ export async function exSelect(req:Request,res:Response) {
         await redis.set(cacheKey, JSON.stringify(exercises), 'EX', 900);
       } catch (err) {
       }
+      console.log('--- FETCHED FROM SUPABASE ---', exercises);
     return res.status(200).json(exercises);
     }
     catch(err){    
