@@ -6,6 +6,8 @@ export const redis = new Redis({
   port: Number(process.env.REDIS_PORT) || 6379,
   password:process.env.REDIS_PASSWORD || '',
   tls: {},
+  maxLoadingRetryTime:500,
+  maxRetriesPerRequest:10
 });
 redis.on('error', (err) => {
   console.warn('[Redis Driver Error]:', err.message);
