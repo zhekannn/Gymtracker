@@ -22,6 +22,7 @@ export default function StatisticSection({ statsTrigger }: { statsTrigger: numbe
     const [userStats,setUserStats]=useState<IUserStats | null>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [activeTab, setActiveTab] = useState<TabType>("general");
+    const [isNoData, setIsNoData]=useState(false);
     const [showGraph,setShowGraph]=useState(false);
     const [selectedExerciseId, setSelectedExerciseId] = useState<number | null>(null);
     const navigate = useNavigate();
@@ -42,6 +43,7 @@ export default function StatisticSection({ statsTrigger }: { statsTrigger: numbe
           const data = await response.json();
   
           if (response.ok) {
+            if(data==null) setIsNoData(true);
             console.log(data);
             setExStats(data.exerciseStats);
             setUserStats(data.userStats);
@@ -94,7 +96,6 @@ export default function StatisticSection({ statsTrigger }: { statsTrigger: numbe
             </button>
           </div>
         </div>
-  
         {isLoading ? (
           <div className="flex justify-center items-center py-16 text-slate-400">
             <Loader2 className="h-6 w-6 animate-spin mr-2" />
@@ -104,7 +105,7 @@ export default function StatisticSection({ statsTrigger }: { statsTrigger: numbe
           <div className="text-slate-400 text-center py-12 border border-dashed border-border/40 rounded-xl">
             No statistics available yet. Complete a workout first!
           </div>
-        ) : (
+        ): isNoData ? (<p>No data for previous month</p>) : (
           <div>
             {/* ВКЛАДКА 1: GENERAL STATS */}
             {activeTab === "general" && userStats && (

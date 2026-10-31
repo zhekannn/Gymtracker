@@ -20,7 +20,7 @@ export class StatService {
   
     return `${datePart} ${timePart}`;
   }
-  public async getUserStatsCached(userId: number): Promise<IUserStats> {
+  public async getUserStatsCached(userId: number): Promise<IUserStats | null> {
     const cacheKey = `stats:user:${userId}`;
   
     try {
@@ -60,7 +60,7 @@ export class StatService {
   
     return stats;
   }
-  public async getUserStats(userId: number): Promise<IUserStats> {
+  public async getUserStats(userId: number): Promise<IUserStats | null> {
     const oneMonthAgo = new Date();
     oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
 
@@ -73,7 +73,9 @@ export class StatService {
         completedAt: "ASC",
       },
     });
-
+    if(workouts.length==0){
+      return null
+    }
     let totalWeightInMonth = 0;
     const weightPerDayMap = new Map<string, number>();
     const bodyWeightMap = new Map<string, number>();
@@ -127,8 +129,11 @@ export class StatService {
           userId,
           bodyWeight: Not(IsNull()),
         },
-        order: { completedAt: 'ASC' },
+        order: { completedAt: 'DESC' },
       });
+    }
+    if(latestBodyWeight==0){
+
     }
     const weightMonthAgo = monthAgoWorkout?.bodyWeight || latestBodyWeight;
     
