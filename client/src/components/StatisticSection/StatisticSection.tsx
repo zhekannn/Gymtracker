@@ -97,203 +97,214 @@ export default function StatisticSection({ statsTrigger }: { statsTrigger: numbe
           </div>
         </div>
         {isLoading ? (
-          <div className="flex justify-center items-center py-16 text-slate-400">
-            <Loader2 className="h-6 w-6 animate-spin mr-2" />
-            <span>Loading stats...</span>
-          </div>
-        ) : exStats?.length === 0 ? (
-          <div className="text-slate-400 text-center py-12 border border-dashed border-border/40 rounded-xl">
-            No statistics available yet. Complete a workout first!
-          </div>
-        ) : isNoData ?(<div className="text-slate-400 text-center py-12 border border-dashed border-border/40 rounded-xl">
-No data for previous month        </div>):   (
-          <div>
-            {/* ВКЛАДКА 1: GENERAL STATS */}
-            {activeTab === "general" && userStats && (
-              <div className="space-y-6 flex flex-col text-center">
-                {/* Карточки с метриками */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40">
-                    <span className="text-xs font-medium text-slate-400">Total Workouts</span>
-                    <p className="text-2xl font-bold text-white mt-1">{userStats.totalWorkouts || 0}</p>
-                  </div>
-  
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40">
-                    <span className="text-xs font-medium text-slate-400">Workouts This Month</span>
-                    <p className="text-2xl font-bold text-white mt-1">{userStats.workoutsInMonth || 0}</p>
-                  </div>
-  
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40">
-                    <span className="text-xs font-medium text-slate-400">Volume This Month</span>
-                    <p className="text-2xl font-bold text-primary mt-1">
-                      {userStats.totalWeightInMonth?.toLocaleString() || 0} t
-                    </p>
-                  </div>
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40 col-span-3">
-                    <span className="text-xs font-medium text-slate-400">Weight difference(this month)</span>
-                    <p className={cn("text-2xl font-bold mt-1", userStats.weight-userStats.weightMonthAgo<0 ? "text-destructive" : "text-primary")}>
-                      {userStats.weight-userStats.weightMonthAgo>0 ? "+" : ""}{(userStats.weight-userStats.weightMonthAgo).toFixed(1)} kg
-                    </p>
-                  </div>
-                </div>
-                <Button className="hover:cursor-pointer items-center justify-center hover:bg-primary-hover" onClick={()=>setShowGraph((prev)=>!prev)}>{showGraph ? "Hide graphics" : "Show graphics"}</Button>
-                {showGraph && <>
-                {/* График 1: Объем за тренировки (Volume Per Workout) */}
+  <div className="flex justify-center items-center py-16 text-slate-400">
+    <Loader2 className="h-6 w-6 animate-spin mr-2" />
+    <span>Loading stats...</span>
+  </div>
+) : exStats?.length === 0 ? (
+  <div className="text-slate-400 text-center py-12 border border-dashed border-border/40 rounded-xl">
+    No statistics available yet. Complete a workout first!
+  </div>
+) : (
+  <div>
+    {/* ВКЛАДКА 1: GENERAL STATS */}
+    {activeTab === "general" && (
+      isNoData ? (
+        <div className="text-slate-400 text-center py-12 border border-dashed border-border/40 rounded-xl">
+          No data for previous month
+        </div>
+      ) : (
+        userStats && (
+          <div className="space-y-6 flex flex-col text-center">
+            {/* Карточки с метриками */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40">
+                <span className="text-xs font-medium text-slate-400">Total Workouts</span>
+                <p className="text-2xl font-bold text-white mt-1">{userStats.totalWorkouts || 0}</p>
+              </div>
+
+              <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40">
+                <span className="text-xs font-medium text-slate-400">Workouts This Month</span>
+                <p className="text-2xl font-bold text-white mt-1">{userStats.workoutsInMonth || 0}</p>
+              </div>
+
+              <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40">
+                <span className="text-xs font-medium text-slate-400">Volume This Month</span>
+                <p className="text-2xl font-bold text-primary mt-1">
+                  {userStats.totalWeightInMonth?.toLocaleString() || 0} t
+                </p>
+              </div>
+              <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40 col-span-3">
+                <span className="text-xs font-medium text-slate-400">Weight difference (this month)</span>
+                <p className={cn("text-2xl font-bold mt-1", userStats.weight - userStats.weightMonthAgo < 0 ? "text-destructive" : "text-primary")}>
+                  {userStats.weight - userStats.weightMonthAgo > 0 ? "+" : ""}{(userStats.weight - userStats.weightMonthAgo).toFixed(1)} kg
+                </p>
+              </div>
+            </div>
+            <Button className="hover:cursor-pointer items-center justify-center hover:bg-primary-hover" onClick={() => setShowGraph((prev) => !prev)}>
+              {showGraph ? "Hide graphics" : "Show graphics"}
+            </Button>
+            {showGraph && (
+              <>
+                {/* График 1: Объем за тренировки */}
                 <div className="bg-slate-900/50 p-5 rounded-xl border border-border/40">
                   <h4 className="text-sm font-semibold text-slate-300 mb-4">Volume per Workout (t)</h4>
                   <div className="h-64 w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-  <LineChart data={userStats.totalWeightPerWorkout}>
-    <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
-    <XAxis 
-      dataKey="date" 
-      stroke="#94a3b8" 
-      fontSize={12}
-      tickFormatter={(val: string) => val.slice(0, 5) || ""}
-    />
-    <YAxis stroke="#94a3b8" fontSize={12} />
-    <Tooltip 
-      contentStyle={{ backgroundColor: "#0F172A", borderColor: "#334155", borderRadius: "8px" }}
-      itemStyle={{ color: "#22C55E" }}  
-      labelFormatter={(label: any) => label || ""}
-    />
-    <Line 
-      type="monotone" 
-      dataKey="value" 
-      name="Volume (t)" 
-      stroke="#38BDF8" 
-      strokeWidth={2.5} 
-      dot={{ fill: "#38BDF8" , r: 4 }} 
-    />
-  </LineChart>
-</ResponsiveContainer>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={userStats.totalWeightPerWorkout}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
+                        <XAxis 
+                          dataKey="date" 
+                          stroke="#94a3b8" 
+                          fontSize={12}
+                          tickFormatter={(val: string) => val.slice(0, 5) || ""}
+                        />
+                        <YAxis stroke="#94a3b8" fontSize={12} />
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: "#0F172A", borderColor: "#334155", borderRadius: "8px" }}
+                          itemStyle={{ color: "#22C55E" }}  
+                          labelFormatter={(label: any) => label || ""}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="value" 
+                          name="Volume (t)" 
+                          stroke="#38BDF8" 
+                          strokeWidth={2.5} 
+                          dot={{ fill: "#38BDF8" , r: 4 }} 
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
                   </div>
                 </div>
-  
-                {/* График 2: Прогресс веса тела (Body Weight Progress) */}
+
+                {/* График 2: Прогресс веса тела */}
                 {userStats.progress && userStats.progress.length > 0 && (
                   <div className="bg-slate-900/50 p-5 rounded-xl border border-border/40">
                     <h4 className="text-sm font-semibold text-slate-300 mb-4">Body Weight History (kg)</h4>
                     <div className="h-64 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-  <LineChart data={userStats.progress}>
-    <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
-    <XAxis 
-      dataKey="date" 
-      stroke="#94a3b8" 
-      fontSize={12} 
-      tickFormatter={(val: string) => val.slice(0, 5) || ""}
-    />
-    <YAxis stroke="#94a3b8" fontSize={12} domain={['dataMin - 1', 'dataMax + 1']} />
-    <Tooltip 
-      contentStyle={{ backgroundColor: "#0F172A", borderColor: "#334155", borderRadius: "8px" }}
-      itemStyle={{ color: "#38BDF8" }}  
-      labelFormatter={(label: any) => label || ""}
-    />
-    <Line 
-      type="monotone" 
-      dataKey="value" 
-      name="Weight" 
-      stroke="#38BDF8" 
-      strokeWidth={2.5} 
-      dot={{ fill: "#38BDF8" , r: 4 }} 
-    />
-  </LineChart>
-</ResponsiveContainer>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={userStats.progress}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
+                          <XAxis 
+                            dataKey="date" 
+                            stroke="#94a3b8" 
+                            fontSize={12} 
+                            tickFormatter={(val: string) => val.slice(0, 5) || ""}
+                          />
+                          <YAxis stroke="#94a3b8" fontSize={12} domain={['dataMin - 1', 'dataMax + 1']} />
+                          <Tooltip 
+                            contentStyle={{ backgroundColor: "#0F172A", borderColor: "#334155", borderRadius: "8px" }}
+                            itemStyle={{ color: "#38BDF8" }}  
+                            labelFormatter={(label: any) => label || ""}
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="value" 
+                            name="Weight" 
+                            stroke="#38BDF8" 
+                            strokeWidth={2.5} 
+                            dot={{ fill: "#38BDF8" , r: 4 }} 
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
                     </div>
                   </div>
-                )}</>}
-                
-              </div>
-            )}
-  
-            {/* ВКЛАДКА 2: EXERCISES STATS */}
-            {activeTab === "exercises" && (
-              <div className="text-slate-400 py-6 text-center">
-                {exStats && <ExerciseSelect exercises={exStats?.map((ex)=>ex.exercise)} selectedId={selectedExerciseId} onSelect={(ex) => setSelectedExerciseId(ex.id)
-                }></ExerciseSelect>}
-                {selectedExerciseId && exStats && (() => {
-  const currentStat = exStats.find((item) => item.exercise.id === selectedExerciseId);
-
-  if (!currentStat) return null;
-  const lastUseFormatted = currentStat.lastUse 
-    ? new Date(currentStat.lastUse).toLocaleDateString([], { 
-        day: '2-digit', 
-        month: '2-digit', 
-        year: 'numeric' 
-      }) 
-    : 'Never';
-
-  return (
-    <div className="space-y-6 mt-4">
-  {/* Грид с карточками показателей */}
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-    <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40 flex flex-col justify-between">
-      <span className="text-xs font-medium text-slate-400">Current Weight</span>
-      <p className="text-2xl font-bold text-white mt-1">
-        {currentStat.currentWeight ?? 0} <span className="text-base font-normal text-slate-400">kg</span>
-      </p>
-    </div>
-
-    <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40 flex flex-col justify-between">
-      <span className="text-xs font-medium text-slate-400">Max Weight</span>
-      <p className="text-2xl font-bold text-emerald-400 mt-1">
-        {currentStat.maxWeight ?? 0} <span className="text-base font-normal text-slate-400">kg</span>
-      </p>
-    </div>
-
-    <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40 flex flex-col justify-between col-span-2">
-      <span className="text-xs font-medium text-slate-400">Last Time Used</span>
-      <p className="text-xl font-semibold text-primary mt-1 text-sm">
-        {/* Выводим готовое значение напрямую */}
-        {currentStat.lastUse.toString() || "—"}
-      </p>
-    </div>
-  </div>
-
-  {/* Контейнер под график Recharts */}
-  <div className="h-64 w-full bg-slate-900/50 p-4 rounded-xl border border-border/40">
-    <ResponsiveContainer width="100%" height="100%">
-      <LineChart data={currentStat.progress}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
-        
-        {/* Простая выгрузка готовой строки "01.08 16:03" без new Date() */}
-        <XAxis 
-          dataKey="date" 
-          stroke="#94a3b8" 
-          fontSize={12}
-          padding={{ left: 20, right: 20 }}
-          tickFormatter={(val: string) => val.slice(0, 5) || ""}
-        />
-        
-        <YAxis stroke="#94a3b8" fontSize={12} domain={['dataMin - 2', 'dataMax + 2']} />
-        
-        <Tooltip 
-          trigger="hover"
-          wrapperStyle={{ pointerEvents: 'none' }}
-          contentStyle={{ backgroundColor: "#0F172A", borderColor: "#334155", borderRadius: "8px" }}
-          itemStyle={{ color: "#38BDF8" }}
-          labelFormatter={(label: any) => label || ""}
-        />
-        
-        <Line 
-          activeDot={{ r: 7, stroke: "#38BDF8", strokeWidth: 2 }}
-          type="linear"
-          dataKey="value" 
-          name="Weight" 
-          stroke="#38BDF8" 
-          strokeWidth={2.5} 
-          dot={{ fill: "#38BDF8", r: 4 }} 
-        />
-      </LineChart>
-    </ResponsiveContainer>
-  </div>
-</div>);
-})()}
-              </div>
+                )}
+              </>
             )}
           </div>
+        )
+      )
+    )}
+
+    {/* ВКЛАДКА 2: EXERCISES STATS */}
+    {activeTab === "exercises" && (
+      <div className="text-slate-400 py-6 text-center">
+        {exStats && (
+          <ExerciseSelect 
+            exercises={exStats?.map((ex) => ex.exercise)} 
+            selectedId={selectedExerciseId} 
+            onSelect={(ex) => setSelectedExerciseId(ex.id)}
+          />
         )}
+        {selectedExerciseId && exStats && (() => {
+          const currentStat = exStats.find((item) => item.exercise.id === selectedExerciseId);
+
+          if (!currentStat) return null;
+          const lastUseFormatted = currentStat.lastUse 
+            ? new Date(currentStat.lastUse).toLocaleDateString([], { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric' 
+              }) 
+            : 'Never';
+
+          return (
+            <div className="space-y-6 mt-4">
+              {/* Грид с карточками показателей */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40 flex flex-col justify-between">
+                  <span className="text-xs font-medium text-slate-400">Current Weight</span>
+                  <p className="text-2xl font-bold text-white mt-1">
+                    {currentStat.currentWeight ?? 0} <span className="text-base font-normal text-slate-400">kg</span>
+                  </p>
+                </div>
+
+                <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40 flex flex-col justify-between">
+                  <span className="text-xs font-medium text-slate-400">Max Weight</span>
+                  <p className="text-2xl font-bold text-emerald-400 mt-1">
+                    {currentStat.maxWeight ?? 0} <span className="text-base font-normal text-slate-400">kg</span>
+                  </p>
+                </div>
+
+                <div className="bg-slate-900/50 p-4 rounded-xl border border-border/40 flex flex-col justify-between col-span-2">
+                  <span className="text-xs font-medium text-slate-400">Last Time Used</span>
+                  <p className="text-xl font-semibold text-primary mt-1 text-sm">
+                    {currentStat.lastUse.toString() || "—"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Контейнер под график Recharts */}
+              <div className="h-64 w-full bg-slate-900/50 p-4 rounded-xl border border-border/40">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={currentStat.progress}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
+                    <XAxis 
+                      dataKey="date" 
+                      stroke="#94a3b8" 
+                      fontSize={12}
+                      padding={{ left: 20, right: 20 }}
+                      tickFormatter={(val: string) => val.slice(0, 5) || ""}
+                    />
+                    <YAxis stroke="#94a3b8" fontSize={12} domain={['dataMin - 2', 'dataMax + 2']} />
+                    <Tooltip 
+                      trigger="hover"
+                      wrapperStyle={{ pointerEvents: 'none' }}
+                      contentStyle={{ backgroundColor: "#0F172A", borderColor: "#334155", borderRadius: "8px" }}
+                      itemStyle={{ color: "#38BDF8" }}
+                      labelFormatter={(label: any) => label || ""}
+                    />
+                    <Line 
+                      activeDot={{ r: 7, stroke: "#38BDF8", strokeWidth: 2 }}
+                      type="linear"
+                      dataKey="value" 
+                      name="Weight" 
+                      stroke="#38BDF8" 
+                      strokeWidth={2.5} 
+                      dot={{ fill: "#38BDF8", r: 4 }} 
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          );
+        })()}
+      </div>
+    )}
+  </div>
+)}
       </div>
     );
   }
