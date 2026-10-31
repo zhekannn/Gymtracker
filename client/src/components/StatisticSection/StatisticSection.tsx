@@ -105,8 +105,8 @@ export default function StatisticSection({ statsTrigger }: { statsTrigger: numbe
           <div className="text-slate-400 text-center py-12 border border-dashed border-border/40 rounded-xl">
             No statistics available yet. Complete a workout first!
           </div>
-        ): isNoData ? (<div className="text-slate-400 text-center py-12 border border-dashed border-border/40 rounded-xl">
-No data for previous month        </div>) : (
+        ) : isNoData ?(<div className="text-slate-400 text-center py-12 border border-dashed border-border/40 rounded-xl">
+No data for previous month        </div>):   (
           <div>
             {/* ВКЛАДКА 1: GENERAL STATS */}
             {activeTab === "general" && userStats && (
