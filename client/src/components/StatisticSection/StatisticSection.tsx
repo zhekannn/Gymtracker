@@ -43,7 +43,7 @@ export default function StatisticSection({ statsTrigger }: { statsTrigger: numbe
           const data = await response.json();
   
           if (response.ok) {
-            if(data.userStats) setIsNoData(true);
+            if(data.userStats==null) setIsNoData(true);
             console.log(data);
             setExStats(data.exerciseStats);
             setUserStats(data.userStats);
