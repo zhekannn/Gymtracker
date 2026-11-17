@@ -1,4 +1,4 @@
-import { useState,useEffect,useRef } from "react"
+import { useState,useEffect } from "react"
 import { toast } from "sonner";
 import { IPlan } from "../../../../shared/types";
 import ActivePlans from "../ActivePlans/ActivePlans";
@@ -8,16 +8,16 @@ import { API_URL } from '../../api/config';
 import GenerateAiPlanDialog from "../GeneratePlanDialog/GeneratePlanDialog";
 export default function Plans(){
     const [plans, setPlans]=useState<IPlan[]>([]);
-    const isShown =useRef(false);
-    const [message,setMessage]=useState("");
+    const [loadError,setLoadError]=useState("");
     useEffect(()=>{
       async function fetchPlans() {
         try {
           const data = await fetchUserPlans();
           setPlans(data);
-      } catch (err: any) {
-          setMessage(err.message);
-          toast.error(err.message);
+      } catch (err: unknown) {
+          const message = err instanceof Error ? err.message : "Failed to load plans";
+          setLoadError(message);
+          toast.error(message);
       }
       }
       fetchPlans();
@@ -36,15 +36,9 @@ export default function Plans(){
       toast.error("Failed to delete plan");
   }
       }
-    if(message && message.length>0 && !isShown.current) {toast.success(message, {
-        duration: 2500,
-      })
-    isShown.current=true;
-    };
-    const addPlanToList = (serverMessage:string, newPlan?: IPlan) => {
+    const addPlanToList = (_serverMessage:string, newPlan?: IPlan) => {
         if(newPlan) setPlans((prev) => [newPlan, ...prev]); 
-        setMessage(serverMessage);
-        isShown.current=false
+        setLoadError("");
       };
       function handleUpdate(id:number,updatedPlan:IPlan){
         setPlans((prev) => 
@@ -70,7 +64,13 @@ export default function Plans(){
           <CreatePlan onPlanChange={addPlanToList} />
         </div>
         <div className="md:col-span-8">
-          <ActivePlans plans={plans} onDelete={deletePlan} onUpdatePlan={handleUpdate} />
+          {loadError ? (
+            <div role="alert" className="rounded-2xl border border-red-500/40 bg-red-950/30 p-6 text-sm text-red-200">
+              {loadError}
+            </div>
+          ) : (
+            <ActivePlans plans={plans} onDelete={deletePlan} onUpdatePlan={handleUpdate} />
+          )}
         </div>
       </div>
     </div>

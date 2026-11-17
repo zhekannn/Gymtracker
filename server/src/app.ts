@@ -25,6 +25,14 @@ app.use(cors({
     else callback(new HttpError(403, "Origin is not allowed"));
   },
 }));
+// A lightweight probe distinguishes the current authenticated API from old deployments.
+app.get("/api/health", (req, res) => {
+  res.set("Cache-Control", "no-store").json({
+    status: "ok",
+    apiVersion: 2,
+    revision: process.env.RENDER_GIT_COMMIT || "local",
+  });
+});
 app.use("/api", apiLimiter);
 // Reject compressed bodies as well as limiting their size, before they reach a decoder.
 app.use(express.json({ limit: "64kb", inflate: false }));

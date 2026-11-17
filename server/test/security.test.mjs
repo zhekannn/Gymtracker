@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { after, beforeEach, test } from "node:test";
-import { createHash, randomBytes } from "node:crypto";
+import { createHash, randomBytes, X509Certificate } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { gzipSync } from "node:zlib";
 import bcrypt from "bcrypt";
@@ -23,6 +23,7 @@ const { TrainingPlans } = await import("../dist/server/src/entities/TrainingPlan
 const { Workout } = await import("../dist/server/src/entities/Workout.js");
 const { Exercise } = await import("../dist/server/src/entities/Exercise.js");
 const { signUserToken } = await import("../dist/server/src/services/authTokens.js");
+const { databaseTls } = await import("../dist/server/src/config/databaseTls.js");
 const { InitialSchema1794910000000 } = await import("../dist/server/src/migrations/1794910000000-InitialSchema.js");
 
 function memoryDatabase(options = {}) {
@@ -123,6 +124,37 @@ test("plans require authentication and query userId cannot select another user's
   await api.get("/api/plans?userId=101").expect(401);
   const response = await api.get("/api/plans?userId=101").set(bearer(attackerToken)).expect(200);
   assert.deepEqual(response.body.plan.map(plan => plan.id), [304]);
+});
+
+test("plans load without a query id using the authenticated account", async () => {
+  const response = await api.get("/api/plans").set(bearer(victimToken)).expect(200);
+  assert.deepEqual(response.body.plan.map(plan => plan.id), [303]);
+  assert(response.body.plan.every(plan => plan.userId === 101));
+  await api.get("/api/plans").expect(401);
+});
+
+test("health identifies the current API without requiring a user id or Redis", async () => {
+  redisDown = true;
+  const response = await api.get("/api/health").expect(200);
+  assert.equal(response.body.status, "ok");
+  assert.equal(response.body.apiVersion, 2);
+  assert.equal(response.headers["cache-control"], "no-store");
+});
+
+test("Supabase TLS uses its pinned public CA and keeps certificate verification enabled", () => {
+  for (const host of ["db.fixture.supabase.co", "aws-0-eu-central-1.pooler.supabase.com"]) {
+    const tls = databaseTls({ DB_HOST: host });
+    assert.equal(tls.rejectUnauthorized, true);
+    const ca = new X509Certificate(tls.ca);
+    assert(ca.ca);
+    assert.equal(ca.fingerprint256.replaceAll(":", "").toLowerCase(), "807025ad50d4ed219d2c9c7d299c004f824eb00cf7f65afef607d07b72e6cafa");
+  }
+  assert.equal(databaseTls({ DB_HOST: "localhost" }), false);
+  assert.equal(databaseTls({ DB_HOST: "supabase.com.attacker.invalid" }), false);
+  assert.deepEqual(databaseTls({ DB_HOST: "db.example.invalid", DB_SSL: "true" }), { rejectUnauthorized: true });
+  assert.deepEqual(databaseTls({ DB_HOST: "db.fixture.supabase.co", DB_SSL_CA: "custom\\nCA" }), {
+    rejectUnauthorized: true, ca: "custom\nCA",
+  });
 });
 
 test("creating plans rejects ids/owners and creates only for the authenticated account", async () => {

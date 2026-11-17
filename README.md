@@ -18,6 +18,20 @@ Set `CLIENT_URL` to the browser origin (for local Docker, `http://localhost`), t
 
 The nginx proxy overwrites forwarded client IPs. `TRUST_PROXY_HOPS=1` is set only for this internal nginx/backend arrangement. Direct Node deployments default to `0`; do not enable unrestricted proxy trust. If another proxy sits in front of nginx, configure nginx real-IP handling only for its trusted addresses before relying on per-IP limits.
 
+## Render (separate frontend and backend)
+
+Keep both services on the same `main` revision. The backend service `Gymtracker` uses the Docker runtime with `server/Dockerfile`; the image builds TypeScript and applies migrations before starting the API.
+
+For a Node deployment instead of Docker, build with `npm --prefix server ci --include=dev && npm --prefix server run build`, run migrations, and then start with `npm --prefix server start`. Do not run an older `dist` directory after updating the source.
+
+The backend needs `NODE_ENV=production`, `CLIENT_URL=https://gymtracker-client.onrender.com`, a random `JWT_SECRET` of at least 32 bytes, database credentials, and Redis settings. The public Supabase Root 2021 CA is bundled for database hosts under `supabase.co` and `supabase.com`, keeping certificate and hostname verification enabled. `DB_SSL_CA` can override it when using a different provider or a rotated CA. Managed Redis needs `REDIS_TLS=true`. Use Render's assigned `PORT`.
+
+For the frontend static site with Root Directory `client`, use Build Command `npm ci --include=dev && npm run build`, Publish Directory `dist`, and `VITE_API_URL=https://gymtracker-6kfq.onrender.com`. `VITE_API_URL` is embedded during the frontend build. Configure the SPA rewrite `/*` to `/index.html`.
+
+If plans return `User ID is missing in query`, the frontend reached the old backend. Check `https://gymtracker-6kfq.onrender.com/api/health`: the new deployment returns `apiVersion: 2` and its Render commit revision. Deploy the latest commit on the **backend** service and inspect any failed build/start logs; restarting the old service does not deploy new source. After upgrading, log in again. Do not restore query-based authorization to hide a stale deployment.
+
+The failed November 17 backend deployments stopped at database initialization because Supabase's CA was missing from the TLS trust configuration. The bundled public certificate fixes this without `rejectUnauthorized:false`. Certificate source: [Supabase Studio configuration](https://github.com/supabase/supabase/blob/master/apps/studio/hooks/custom-content/custom-content.json), [public CA download](https://supabase-downloads.s3-ap-southeast-1.amazonaws.com/prod/ssl/prod-ca-2021.crt).
+
 ## Local Node development
 
 ```sh
