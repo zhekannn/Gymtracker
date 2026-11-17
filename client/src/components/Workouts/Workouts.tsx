@@ -335,11 +335,6 @@ export default function Workouts() {
         className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-2xl rounded-t-2xl border border-slate-700/80 bg-[#020617]/95 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] shadow-[0_-12px_32px_rgba(2,6,23,0.35)] backdrop-blur-md sm:px-6"
       >
         <div className="mx-auto w-full max-w-md">
-          <p className="mb-2 text-xs font-medium text-slate-400" aria-live="polite">
-            {exerciseCount > 0
-              ? `${exerciseCount} ${exerciseCount === 1 ? "exercise" : "exercises"} in this workout`
-              : "Add exercises to get started"}
-          </p>
           <div className="grid grid-cols-2 gap-2 sm:gap-3">
             <Button
               type="button"
