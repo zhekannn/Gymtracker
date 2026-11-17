@@ -26,6 +26,7 @@ export default function Workouts() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [note, setNote] = useState("");
   const [weight, setWeight] = useState<number>(0);
+  const exerciseCount = currentWorkout.filter((exercise) => exercise.exerciseId !== 0).length;
   
   const shown = useRef(false);
   const navigate = useNavigate();
@@ -159,7 +160,7 @@ export default function Workouts() {
   }
 
   return (
-    <div className="relative flex flex-col items-center bg-[#0F213B] mx-auto max-w-2xl p-6 rounded-2xl border-2 border-primary/30 shadow-xl transition-all hover:border-primary/60">
+    <div className="relative mx-auto flex w-full min-w-0 max-w-2xl flex-col items-center rounded-2xl border-2 border-primary/30 bg-[#0F213B] p-4 pb-[calc(8rem+env(safe-area-inset-bottom))] shadow-xl transition-all hover:border-primary/60 sm:p-6 sm:pb-[calc(8rem+env(safe-area-inset-bottom))]">
       <h1 className="text-2xl font-bold mb-6 text-white">Conduct a workout</h1>
 
       {!plans || plans.length === 0 ? (
@@ -195,12 +196,12 @@ export default function Workouts() {
       )}
 
       {selectedPlan && (
-        <div className="flex items-center justify-between w-full max-w-md bg-slate-900/60 p-3 rounded-lg border border-border mb-4">
-          <h2 className="text-lg font-semibold text-white">{selectedPlan.name}</h2>
+        <div className="mb-4 flex w-full max-w-md items-center justify-between gap-3 rounded-lg border border-border bg-slate-900/60 p-3">
+          <h2 className="min-w-0 text-base font-semibold wrap-break-word text-white sm:text-lg">{selectedPlan.name}</h2>
           <Button
             variant="destructive"
             size="sm"
-            className="hover:cursor-pointer"
+            className="shrink-0 hover:cursor-pointer"
             onClick={() => {
               const planExerciseIds = new Set(selectedPlan.exercises.map((ex) => ex.exerciseId));
               const customExercisesOnly = currentWorkout.filter(
@@ -327,16 +328,38 @@ export default function Workouts() {
             />
           </div>
         </div>
-        <div className="flex flex-wrap justify-center gap-3 w-full max-w-md mt-2">
-          <Button onClick={handleRowAdd} variant="outline" className="flex-1 min-w-[140px] hover:text-black hover:cursor-pointer">
-            + Add exercise
-          </Button>
-
-          {currentWorkout.length > 0 && (
-            <Button onClick={handleComplete} variant="default" className="flex-1 min-w-[140px] hover:cursor-pointer hover:bg-primary-hover">
-              Complete workout
+      </div>
+      <div
+        role="group"
+        aria-label="Workout actions"
+        className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-2xl rounded-t-2xl border border-slate-700/80 bg-[#020617]/95 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] shadow-[0_-12px_32px_rgba(2,6,23,0.35)] backdrop-blur-md sm:px-6"
+      >
+        <div className="mx-auto w-full max-w-md">
+          <p className="mb-2 text-xs font-medium text-slate-400" aria-live="polite">
+            {exerciseCount > 0
+              ? `${exerciseCount} ${exerciseCount === 1 ? "exercise" : "exercises"} in this workout`
+              : "Add exercises to get started"}
+          </p>
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
+            <Button
+              type="button"
+              onClick={handleRowAdd}
+              variant="outline"
+              className={cn("h-11 min-w-0 cursor-pointer px-2 leading-tight whitespace-normal hover:text-black", currentWorkout.length === 0 && "col-span-2")}
+            >
+              + Add exercise
             </Button>
-          )}
+            {currentWorkout.length > 0 && (
+              <Button
+                type="button"
+                onClick={handleComplete}
+                variant="default"
+                className="h-11 min-w-0 cursor-pointer px-2 font-semibold leading-tight whitespace-normal hover:bg-primary-hover"
+              >
+                Complete workout
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>
