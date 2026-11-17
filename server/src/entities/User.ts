@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Index} from "typeorm";
 import {IUser} from "../../../shared/types.js"
 import type { TrainingPlans } from "./TrainingPlans.js";
 import { Workout } from "./Workout.js";
 @Entity({ name: "users" })
+@Index("IDX_users_username_unique", ["username"], { unique: true })
 export class User implements IUser{
     @PrimaryGeneratedColumn()
     id: number;

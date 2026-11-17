@@ -1,12 +1,11 @@
 import { IPlan } from "../../shared/types";
 import { API_URL } from './api/config';
 export async function fetchUserPlans(): Promise<IPlan[]> {
-    const storedUser = localStorage.getItem('user');
-    if (!storedUser) {
-        throw new Error("User not found in storage");
-    }
-    const user = JSON.parse(storedUser);
-    const response = await fetch(`${API_URL}/api/plans?userId=${user.id}`);
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error("Please log in to load your plans");
+    const response = await fetch(`${API_URL}/api/plans`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
 
     if (!response.ok) {
         const errorData = await response.json();

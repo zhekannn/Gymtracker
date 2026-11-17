@@ -1,16 +1,9 @@
+import type { Request, Response } from "express";
 import { PlanService } from "../services/planService.js";
-import { Request,Response } from "express";
-export async function GeneratePlan(req:Request, res:Response) {
-    try{
-        const planService=new PlanService();
-        const data=req.body;
-        const userId=Number((req as any).user.id);
-        const generatedPlan=await planService.generateWithAI(data, userId);
-        if(!generatedPlan) return res.status(400).json({message:"Failed to generate plan"});
-        return res.status(200).json({message:"Plan saved successfully!", plan:generatedPlan});
-    }
-    catch(err){
-        console.log("Error: ", err);
-        return res.status(500).json({message:"Server error"});
-    }
+import { generatePlanSchema } from "../validation/schemas.js";
+
+export async function GeneratePlan(req: Request, res: Response) {
+  const data = generatePlanSchema.parse(req.body);
+  const plan = await new PlanService().generateWithAI(data, req.user!.id);
+  return res.status(200).json({ message: "Plan saved successfully!", plan });
 }

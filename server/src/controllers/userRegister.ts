@@ -1,24 +1,23 @@
-import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../config/jwt.js";
+import type { Request, Response } from "express";
 import { sendMail } from "../services/sendMail.js";
 import { UserService } from "../services/userService.js";
-import { IUser } from "../../../shared/types.js";
-const user=new UserService();
-export async function register(req:Request, res:Response) {
-    try {
-        const { password: plainPassword, rememberMe,  ...otherData } = req.body;
-        if(await user.checkName(req.body.username))  return  res.status(401).json({message: "User with such name already exists!"});
-        if(await user.checkEmail(otherData.email)) return  res.status(401).json({message: "User with such email already exists!"});
-        const hashedPassword=await user.hashPassword(plainPassword);
-        const savedUser=await user.create(otherData, hashedPassword);
-        const token=jwt.sign({id:savedUser.id}, JWT_SECRET,{expiresIn: rememberMe ?'30d' : '24h'});
-        const { password: _, ...userResponse } = savedUser;
-        const finalResponse:IUser=userResponse;
-        sendMail(otherData.email, "Welcome!","<p>Welcome to your GymTracker account</p>");
-        return res.status(201).json({user:finalResponse, token});
-    } catch (err) {
-        console.error("Error: ", err);
-        return res.status(500).json({ message: "Error during registration" });
-    }
+import { signUserToken } from "../services/authTokens.js";
+import { registrationSchema } from "../validation/schemas.js";
+import { HttpError } from "../utils/HttpError.js";
+
+export async function register(req: Request, res: Response) {
+  const data = registrationSchema.parse(req.body);
+  const service = new UserService();
+  if (await service.checkName(data.username) || await service.checkEmail(data.email)) {
+    throw new HttpError(409, "Username or email is already in use");
+  }
+  const savedUser = await service.create(data, await service.hashPassword(data.password));
+  const token = signUserToken(savedUser, data.rememberMe);
+  void sendMail(savedUser.email, "Welcome!", "<p>Welcome to your GymTracker account</p>");
+  return res.status(201).json({
+    user: {
+      id: savedUser.id, username: savedUser.username, email: savedUser.email,
+      height: savedUser.height, weight: savedUser.weight, birthDate: savedUser.birthDate,
+    }, token,
+  });
 }

@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { Spinner } from "@/components/ui/spinner"
 import { useEffect, useState } from "react";
+import { API_URL } from "./api/config";
 export const ProtectedRoute = () => {
   const [isVerifying, setIsVerifying] = useState(true);
   const [isValid, setIsValid] = useState(false);
@@ -12,7 +13,7 @@ export const ProtectedRoute = () => {
         return;
       }
       try {
-        const res = await fetch('/api/me', {
+        const res = await fetch(`${API_URL}/api/me`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) setIsValid(true);

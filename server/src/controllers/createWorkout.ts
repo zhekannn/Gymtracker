@@ -1,36 +1,9 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import { WorkoutService } from "../services/workoutService.js";
-import { IWorkout } from "../../../shared/types.js";
-import { redis } from "../config/redis.js";
-const workoutService = new WorkoutService();
+import { workoutSchema } from "../validation/schemas.js";
 
 export async function createWorkout(req: Request, res: Response) {
-    try {
-        const userId = (req as any).user.id; 
-
-        if (!userId) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
-        const workoutData:IWorkout = req.body; 
-        const hasInvalidFields = workoutData.exercisesSnapshot.some((exercise) => {
-            const reps = Number(exercise.reps);
-            const sets = Number(exercise.sets);
-            const weight = Number(exercise.weight);
-          
-            const isRepsInvalid = !reps || reps < 1 || Number.isNaN(reps);
-            const isSetsInvalid = !sets || sets < 1 || Number.isNaN(sets);
-            const isWeightInvalid = weight < 0 || Number.isNaN(weight);
-          
-            return isRepsInvalid || isSetsInvalid || isWeightInvalid;
-          });
-        if (!workoutData || !workoutData.exercisesSnapshot || hasInvalidFields) {
-            return res.status(400).json({ message: "Invalid workout data provided" });
-        }
-        const newWorkout = await workoutService.create(workoutData, userId);
-        await redis.del(`stats:user:${userId}`);
-        return res.status(201).json({ message: "Workout saved!", workout: newWorkout });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Server error" });
-    }
+  const data = workoutSchema.parse(req.body);
+  const workout = await new WorkoutService().create(data, req.user!.id);
+  return res.status(201).json({ message: "Workout saved!", workout });
 }

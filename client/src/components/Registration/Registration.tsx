@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useState } from "react"
 import { IUser } from '../../../../shared/types'
 import { useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
@@ -21,8 +21,8 @@ export default function Registration() {
       toast.error("Invalid weight");
       return;
     }
-    if(formData.password.length<6){
-      toast.error("Password must be at least 6 characters long");
+    if(formData.password.length<12 || new TextEncoder().encode(formData.password).length>72){
+      toast.error("Password must be at least 12 characters and no more than 72 UTF-8 bytes");
       return;
     }
     try {
@@ -84,6 +84,8 @@ export default function Registration() {
             <input 
               type="password" 
               required 
+                minLength={12}
+                autoComplete="new-password"
               className="bg-[#0F172A] border border-[#334155] text-white rounded-lg p-2.5 focus:border-[#22C55E] outline-none" 
               value={formData.password} 
               onChange={(e) => setFormData({ ...formData, password: e.target.value })} 

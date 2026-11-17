@@ -1,51 +1,64 @@
 import { Workout } from "../entities/Workout.js";
 import { AppDataSource } from "../data-source.js";
-import { IWorkout } from "../../../shared/types.js";
+import type { IWorkout } from "../../../shared/types.js";
 import { User } from "../entities/User.js";
-import { DeleteResult } from "typeorm";
+import { TrainingPlans } from "../entities/TrainingPlans.js";
+import type { DeleteResult } from "typeorm";
 import { redis } from "../config/redis.js";
-export class WorkoutService{
-    private workoutRepo=AppDataSource.getRepository(Workout);
-    private userRepo=AppDataSource.getRepository(User);
-    public async getWorkouts(userId:number):Promise<IWorkout[]> {
-        const workouts = await this.workoutRepo.find({ where: { userId: userId } });
-        return workouts;
-        }
-    public async create(workout:IWorkout, userId:number):Promise<IWorkout>{
-        const newWorkout=this.workoutRepo.create({...workout, userId:userId,completedAt: new Date()});
-        if(workout.bodyWeight && workout.bodyWeight>0){
-            await this.userRepo.update(userId, {
-                weight: workout.bodyWeight,
-              });
-        }
-        const keys = await redis.keys(`stats:*:${userId}*`);
-            if (keys.length > 0) {
-                await redis.del(keys);
-              }
-        return await this.workoutRepo.save(newWorkout);
+import type { WorkoutInput } from "../validation/schemas.js";
+import { HttpError } from "../utils/HttpError.js";
+
+export class WorkoutService {
+  private workoutRepo = AppDataSource.getRepository(Workout);
+
+  public getWorkouts(userId: number): Promise<IWorkout[]> {
+    return this.workoutRepo.find({ where: { userId } });
+  }
+
+  private async invalidateStats(userId: number): Promise<void> {
+    try {
+      await redis.del(`stats:user:${userId}`, `stats:exercises:${userId}`);
+    } catch {
+      // A cache outage must not turn an already committed write into a failed request.
+      console.warn("Could not invalidate workout statistics cache");
     }
-    public async delete(workoutId:number, userId:number):Promise<DeleteResult>{
-        const result=await this.workoutRepo.delete({userId:userId, id:workoutId});
-        const keys = await redis.keys(`stats:*:${userId}*`);
-        if(result.affected && result.affected>0){
-            if (keys.length > 0) {
-                await redis.del(keys);
-              }
-        }
-        return result;
-    }
-    public async getWorkoutsByUser(userId: number, page: number = 1, limit: number = 10) {
-        const skip = (page - 1) * limit;
-    
-        const [workouts, total] = await this.workoutRepo.findAndCount({
-            where: { userId },
-            order: { completedAt: "DESC" },
-            take: limit,
-            skip: skip,
-        });
-    
-        const hasMore = skip + workouts.length < total;
-    
-        return { workouts, total, hasMore };
-    }
+  }
+
+  public async create(data: WorkoutInput, userId: number): Promise<Workout> {
+    const workout = await AppDataSource.transaction(async manager => {
+      const plan = data.planId === undefined ? null :
+        await manager.getRepository(TrainingPlans).findOneBy({ id: data.planId, userId });
+      if (data.planId !== undefined && !plan) throw new HttpError(404, "Plan not found");
+      const repo = manager.getRepository(Workout);
+      const created = repo.create({
+        exercisesSnapshot: data.exercisesSnapshot, userId, completedAt: new Date(),
+        planNameSnapshot: plan?.name ?? data.planNameSnapshot ?? "Quick workout",
+        ...(data.note !== undefined ? { note: data.note } : {}),
+        ...(data.planId !== undefined ? { planId: data.planId } : {}),
+        ...(data.bodyWeight !== undefined ? { bodyWeight: data.bodyWeight } : {}),
+      });
+      const result = await repo.insert(created);
+      created.id = result.identifiers[0]!.id;
+      if (data.bodyWeight !== undefined) {
+        await manager.getRepository(User).update(userId, { weight: data.bodyWeight });
+      }
+      return created;
+    });
+    await this.invalidateStats(userId);
+    return workout;
+  }
+
+  public async delete(workoutId: number, userId: number): Promise<DeleteResult> {
+    const result = await this.workoutRepo.delete({ userId, id: workoutId });
+    if (result.affected) await this.invalidateStats(userId);
+    return result;
+  }
+
+  public async getWorkoutsByUser(userId: number, page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+    const [workouts, total] = await this.workoutRepo.findAndCount({
+      where: { userId }, order: { completedAt: "DESC" }, take: limit, skip,
+    });
+    return { workouts, total, hasMore: skip + workouts.length < total };
+  }
 }

@@ -1,17 +1,9 @@
-import { Request,Response } from "express";
+import type { Request, Response } from "express";
 import { PlanService } from "../services/planService.js";
-const plan=new PlanService();
-export async function deletePlan(req:Request, res:Response){
-    try{
-    const planId=Number(req.params.id);
-    const userId=(req as any).user.id;
-    const planDelete=await plan.delete(planId, userId);
-    if(planDelete.affected===0){
-        return res.status(401).json({message:"Plan not found or Access denied!"})
-    }
-    else return res.status(200).json({message:"Plan deleted successfully"});
-    }
-    catch{
-        return res.status(500).json({ message: "Server error" });
-    }
+import { idSchema } from "../validation/schemas.js";
+
+export async function deletePlan(req: Request, res: Response) {
+  const result = await new PlanService().delete(idSchema.parse(req.params.id), req.user!.id);
+  if (!result.affected) return res.status(404).json({ message: "Plan not found" });
+  return res.status(200).json({ message: "Plan deleted successfully" });
 }

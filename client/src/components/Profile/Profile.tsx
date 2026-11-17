@@ -11,7 +11,7 @@ import WorkoutSection from "../WorkoutSection/WorkoutSection";
 import { getAge } from "../../getAge";
 export default function Profile(){
     const [user,setUser]=useState<IUser | null>(null);
-    const [trainings,setTrainings]=useState<IWorkout[] | null>(null);
+    const [trainings]=useState<IWorkout[] | null>(null);
     const navigate=useNavigate();
     const location=useLocation();
     const hasShown=useRef(false);
@@ -34,8 +34,10 @@ export default function Profile(){
               });
               hasShown.current=true;
         }
-        navigate(location.pathname, { replace: true, state: {} });
-    },[])
+        if (location.state?.loginSuccess) {
+            navigate(location.pathname, { replace: true, state: {} });
+        }
+    },[location.pathname, location.state?.loginSuccess, navigate])
     if(!user) return null;
     return (
       <div className="md:flex md:grid-cols-3 w-[100%] justify-center">

@@ -1,42 +1,23 @@
-import { Request, Response } from "express";
-import crypto from "crypto";
+import type { Request, Response } from "express";
+import { createHash, randomBytes } from "node:crypto";
 import { UserService } from "../services/userService.js";
+import { passwordVersion } from "../services/authTokens.js";
 import { sendMail } from "../services/sendMail.js";
 import { redis } from "../config/redis.js";
 import { CLIENT_URL } from "../config/jwt.js";
+import { forgotPasswordSchema } from "../validation/schemas.js";
+
 export async function forgotPassword(req: Request, res: Response) {
-  try {
-    const { email } = req.body;
-
-    if (!email) {
-      return res.status(400).json({ message: "Email is required" });
-    }
-
-    const userService = new UserService();
-    const user = await userService.checkEmail(email);
-    if (user) {
-      const resetToken = crypto.randomBytes(32).toString("hex");
-      await redis.set(`reset:${resetToken}`, user.id, "EX", 900);
-      const frontendUrl = CLIENT_URL || "http://localhost";
-      const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
-      const htmlContent = `
-        <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; rounded: 8px;">
-          <h2 style="color: #0f172a;">Password Reset Request</h2>
-          <p style="color: #334155;">You requested to reset your password for your GymTracker account.</p>
-          <p style="color: #334155;">Click the button below to set a new password. This link is valid for <strong>15 minutes</strong>.</p>
-          <div style="margin: 24px 0;">
-            <a href="${resetUrl}" style="background-color: #22c55e; color: #020617; text-decoration: none; padding: 12px 20px; font-weight: bold; border-radius: 6px; display: inline-block;">Reset Password</a>
-          </div>
-          <p style="color: #94a3b8; font-size: 12px;">If you didn't request this, you can safely ignore this email.</p>
-        </div>
-      `;
-      await sendMail(email, "GymTracker - Password Reset Request", htmlContent);
-    }
-    return res.status(200).json({
-      message: "If an account with that email exists, a reset link has been sent to your inbox."
-    });
-  } catch (err) {
-    console.error("Forgot password error:", err);
-    return res.status(500).json({ message: "Server error" });
+  const { email } = forgotPasswordSchema.parse(req.body);
+  const user = await new UserService().checkEmail(email);
+  if (user) {
+    const resetToken = randomBytes(32).toString("hex");
+    const key = "reset:" + createHash("sha256").update(resetToken).digest("hex");
+    await redis.set(key, JSON.stringify({ userId: user.id, version: passwordVersion(user.password) }), "EX", 900);
+    const url = new URL("/reset-password", CLIENT_URL || "http://localhost");
+    url.searchParams.set("token", resetToken);
+    await sendMail(email, "GymTracker - Password Reset Request",
+      `<p>You requested to reset your GymTracker password.</p><p><a href="${url.href}">Reset password</a></p><p>This link expires in 15 minutes. Ignore this email if you did not request it.</p>`);
   }
+  return res.status(200).json({ message: "If an account with that email exists, a reset link has been sent to your inbox." });
 }

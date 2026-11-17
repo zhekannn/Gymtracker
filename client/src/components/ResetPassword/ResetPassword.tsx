@@ -15,8 +15,8 @@ export default function ResetPassword() {
       toast.error("Invalid or missing reset token");
       return;
     }
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters long");
+    if (password.length < 12 || new TextEncoder().encode(password).length > 72) {
+      toast.error("Password must be at least 12 characters and no more than 72 UTF-8 bytes");
       return;
     }
     if (password !== confirmPassword) {
@@ -32,12 +32,14 @@ export default function ResetPassword() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, newPassword: password })
       });
-
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to reset password");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
       toast.success("Password reset successfully!");
       navigate("/login");
-    } catch (err: any) {
-      console.error(err);
-      toast.error("Failed to reset password");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to reset password");
     } finally {
       setLoading(false);
     }
@@ -67,6 +69,8 @@ export default function ResetPassword() {
           🔒 New Password
           <input 
             type="password" 
+            minLength={12}
+            autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required 

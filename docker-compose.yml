@@ -1,58 +1,66 @@
-version: '3.8'
-
 services:
-  # 1. Кэш Redis
   redis:
-    image: redis:alpine
+    image: redis:7-alpine
     container_name: app_redis
-    ports:
-      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}"]
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=\"$$REDIS_PASSWORD\" redis-cli ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
     restart: always
 
-  # 2. База данных PostgreSQL
   postgres:
     image: postgres:15-alpine
     container_name: app_postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-1605Zhekan}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
       POSTGRES_DB: gymtracker
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d gymtracker"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
     restart: always
 
-  # 3. Express Backend
   backend:
     build:
       context: .
       dockerfile: server/Dockerfile
     container_name: app_backend
-    ports:
-      - "5000:5000"
     env_file:
       - .env
     environment:
-      SMTP_HOST: sandbox.smtp.mailtrap.io
-      SMTP_PORT: 2525
-      SMTP_USER: ${EMAIL_USER}
-      SMTP_PASS: ${EMAIL_PASS}
-      FRONTEND_URL: http://localhost
-      PORT: ${PORT:-5000}
+      NODE_ENV: production
+      CLIENT_URL: ${CLIENT_URL:-http://localhost}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      PORT: 5000
+      TRUST_PROXY_HOPS: 1
       DB_HOST: postgres
-      DB_PORT: ${DB_PORT:-5432}
+      DB_PORT: 5432
       DB_USER: postgres
-      DB_PASSWORD: ${DB_PASSWORD:-1605Zhekan}
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
       DB_NAME: gymtracker
+      DB_SSL: "false"
+      DB_SYNCHRONIZE: "false"
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
+      REDIS_TLS: "false"
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: always
 
-  # 4. React Frontend
   frontend:
     build:
       context: .
@@ -66,3 +74,4 @@ services:
 
 volumes:
   pgdata:
+  redisdata:

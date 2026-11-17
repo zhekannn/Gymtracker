@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Plus, Check, ChevronsUpDown, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,7 @@ export default function CreatePlan({ onPlanChange }: planProp) {
   const [open, setOpen] = useState(false);
   const [exercises, setExercises] = useState<IExercisesList[]>([]);
   const [exerciseList, setExerciseList] = useState<IExercise[]>([]);
-  const [selectedIds, setSelectedIds]=useState<Number[]>([]);
+  const [selectedIds, setSelectedIds]=useState<number[]>([]);
   const [currentEx, setCurrentEx] = useState<IExercise>({
     exerciseId: 0,
     name: '',
@@ -40,7 +40,7 @@ export default function CreatePlan({ onPlanChange }: planProp) {
     reps: '' as any,
     sets: '' as any
   });
-  async function fetchExercises() {
+  const fetchExercises = useCallback(async () => {
     try{
       const data=await getExes();
       setExercises(data);
@@ -50,13 +50,10 @@ export default function CreatePlan({ onPlanChange }: planProp) {
         console.log(err);
         toast.error("Failed to load exercises");
     }
-  }
+  }, []);
   useEffect(() => {
-    if(open){ 
-    if(!exercises || exercises.length==0)
-      fetchExercises();
-  }
-  }, [open]);
+    if(open && exercises.length === 0) void fetchExercises();
+  }, [open, exercises.length, fetchExercises]);
   function handleAddExercise() {
     if (!value) return toast.info("Please select an exercise");
 
@@ -78,7 +75,7 @@ export default function CreatePlan({ onPlanChange }: planProp) {
   }
 
   function handleRemoveExercise(indexToRemove: number) {
-    setExerciseList((prev) => prev.filter((ex, index) => ex.exerciseId !== indexToRemove));
+    setExerciseList((prev) => prev.filter((ex) => ex.exerciseId !== indexToRemove));
     setSelectedIds(prev=>prev.filter((val)=>val!=indexToRemove));
   }
 
@@ -94,25 +91,22 @@ export default function CreatePlan({ onPlanChange }: planProp) {
     }
 
     try {
-      const userId = localStorage.getItem('user');
-      if (!userId) {
+      const token = localStorage.getItem('token');
+      if (!token) {
         navigate('/login');
         return;
       }
-      const userObj = JSON.parse(userId);
-      const id = userObj.id;
 
-      const planData: IPlan = {
+      const planData: Pick<IPlan, 'name' | 'exercises'> = {
         name: name,
         exercises: exerciseList,
-        userId: id
       };
 
       const response = await fetch(`${API_URL}/api/plans`, {
         method: 'POST',
         headers: {
           'Content-type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(planData)
       });

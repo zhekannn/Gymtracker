@@ -1,4 +1,4 @@
-import { ChartNoAxesColumnIncreasing, Loader2, Dumbbell, User, ChevronUp } from "lucide-react";
+import { ChartNoAxesColumnIncreasing, Loader2, Dumbbell, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -232,13 +232,6 @@ export default function StatisticSection({ statsTrigger }: { statsTrigger: numbe
           const currentStat = exStats.find((item) => item.exercise.id === selectedExerciseId);
 
           if (!currentStat) return null;
-          const lastUseFormatted = currentStat.lastUse 
-            ? new Date(currentStat.lastUse).toLocaleDateString([], { 
-                day: '2-digit', 
-                month: '2-digit', 
-                year: 'numeric' 
-              }) 
-            : 'Never';
 
           return (
             <div className="space-y-6 mt-4">

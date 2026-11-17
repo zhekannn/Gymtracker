@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { IWorkout, IExercise } from "../../../../shared/types";
 import { History, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
@@ -12,7 +12,7 @@ export default function WorkoutSection({onWorkoutDeleted}:{onWorkoutDeleted():vo
   const [hasMore, setHasMore] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const LIMIT = 2;
-  async function fetchTrainings(pageNum: number) {
+  const fetchTrainings = useCallback(async (pageNum: number) => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
@@ -36,11 +36,11 @@ export default function WorkoutSection({onWorkoutDeleted}:{onWorkoutDeleted():vo
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
   useEffect(() => {
     fetchTrainings(1);
-  }, []);
-  function handleLoadMore() {
+  }, [fetchTrainings]);
+  const handleLoadMore = useCallback(() => {
     if(trainings.length==0){
       setPage(1);
       fetchTrainings(1);
@@ -50,7 +50,7 @@ export default function WorkoutSection({onWorkoutDeleted}:{onWorkoutDeleted():vo
       setPage(newPage);
       fetchTrainings(newPage);
     } 
-  }
+  }, [trainings.length, page, fetchTrainings]);
 
   async function deleteWorkout(id: number) {
     if (id === 0) {
@@ -85,7 +85,7 @@ export default function WorkoutSection({onWorkoutDeleted}:{onWorkoutDeleted():vo
     if (trainings.length === 0 && hasMore && !loading) {
       handleLoadMore();
     }
-  }, [trainings.length, hasMore, loading]);
+  }, [trainings.length, hasMore, loading, handleLoadMore]);
   return (
     <>
       <div className="flex items-center gap-2 mb-6">
